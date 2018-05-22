@@ -36,17 +36,11 @@ public:
     friend inline std::istream& operator>>( std::istream &is, Vec3& v ) noexcept;
     friend inline std::ostream& operator<<( std::ostream &os, const Vec3& v ) noexcept;
 
-    inline Type GetLength() const noexcept;
-    inline Type GetSquaredLength() const noexcept;
-    inline Vec3 GetUnit() const noexcept;
-    inline void MakeUnit() noexcept;
-
-    static Type Dot( const Vec3& lhs, const Vec3& rhs ) noexcept;
-    static Vec3 Cross( const Vec3& lhs, const Vec3& rhs ) noexcept;
+    inline Type Length() const noexcept;
+    inline Type SquaredLength() const noexcept;
+    inline Vec3 Unit() const noexcept;
 
 public:
-    static const Vec3 Unit;
-
     union
     {
         struct { Type X, Y, Z; };
@@ -54,9 +48,6 @@ public:
         struct { Type S, T, P; };
     };
 };
-
-template <typename Type>
-const Vec3<Type> Vec3<Type>::Unit( 1.f );
 
 template <typename Type>
 constexpr Vec3<Type>::Vec3() noexcept = default;
@@ -205,31 +196,22 @@ inline std::ostream& operator<<(std::ostream& os, const Vec3<Type>& v) noexcept
 }
 
 template <typename Type>
-inline Type Vec3<Type>::GetLength() const noexcept
+inline Type Vec3<Type>::Length() const noexcept
 {
-    return std::sqrt( GetSquaredLength() );
+    return std::sqrt( SquaredLength() );
 }
 
 template <typename Type>
-inline Type Vec3<Type>::GetSquaredLength() const noexcept
+inline Type Vec3<Type>::SquaredLength() const noexcept
 {
     return X * X + Y * Y + Z * Z;
 }
 
 template <typename Type>
-inline Vec3<Type> Vec3<Type>::GetUnit() const noexcept
+inline Vec3<Type> Vec3<Type>::Unit() const noexcept
 {
-    const Type k = 1.f / GetLength();
+    const Type k = 1.f / Length();
     return Vec3<Type>( X * k, Y * k, Z * k );
-}
-
-template <typename Type>
-inline void Vec3<Type>::MakeUnit() noexcept
-{
-    const Type k = 1.f / GetLength();
-    X *= k;
-    Y *= k;
-    Z *= k;
 }
 
 template <typename Type>
@@ -274,31 +256,12 @@ inline Vec3<Type> operator/( const Vec3<Type>& v, Type t ) noexcept
     return Vec3<Type>( v.X / t, v.Y / t, v.Z / t );
 }
 
-template <typename Type>
-Type Vec3<Type>::Dot( const Vec3<Type>& lhs, const Vec3<Type>& rhs ) noexcept
-{
-    return lhs.X * rhs.X + lhs.Y * rhs.Y + lhs.Z * rhs.Z;
-}
+using BVec3 = Vec3<bool>;
 
-template <typename Type>
-Vec3<Type> Vec3<Type>::Cross( const Vec3<Type>& lhs, const Vec3<Type>& rhs ) noexcept
-{
-    return Vec3<Type>( lhs.Y * rhs.Z - lhs.Z * rhs.Y ,
-                       lhs.Z * rhs.X - lhs.X * rhs.Z ,
-                       lhs.X * rhs.Y - lhs.Y * rhs.X );
-}
+using UVec3 = Vec3<U32>;
+using SVec3 = Vec3<S32>;
 
-using BVec3   = Vec3<Byte>;
+using FVec3 = Vec3<F32>;
+using DVec3 = Vec3<F64>;
 
-using U8Vec3  = Vec3<U8>;
-using U16Vec3 = Vec3<U16>;
-using U32Vec3 = Vec3<U32>;
-using U64Vec3 = Vec3<U64>;
-
-using S8Vec3  = Vec3<U8>;
-using S16Vec3 = Vec3<U16>;
-using S32Vec3 = Vec3<U32>;
-using S64Vec3 = Vec3<U64>;
-
-using FVec3   = Vec3<F32>;
-using DVec3   = Vec3<F64>;
+using RGB = Vec3<Byte>;

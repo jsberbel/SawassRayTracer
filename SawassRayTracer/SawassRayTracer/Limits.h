@@ -45,8 +45,8 @@ template<>
 struct Limits <S8>
 {
     using Type = S8;
-    static constexpr Type Min() noexcept { return -127; }
-    static constexpr Type Max() noexcept { return 128; }
+    static constexpr Type Min() noexcept { return -128; }
+    static constexpr Type Max() noexcept { return 127; }
 };
 
 template<>
@@ -111,12 +111,4 @@ struct Limits <UTF32>
     using Type = UTF32;
     static constexpr Type Min() noexcept { return 0; }
     static constexpr Type Max() noexcept { return 0xffffffff; }
-};
-
-template<>
-struct Limits <Byte>
-{
-    using Type = Byte;
-    static constexpr Type Min() noexcept { return 0; }
-    static constexpr Type Max() noexcept { return 0xff; }
 };

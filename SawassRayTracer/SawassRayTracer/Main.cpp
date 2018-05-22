@@ -1,34 +1,22 @@
 #include <vector>
 
-#include "Ray.h"
+#include "Limits.h"
+#include "World.h"
+#include "Sphere.h"
 
 #define STBI_MSC_SECURE_CRT
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-F32 HitSphere( const FVec3& center, F32 radius, const Ray& ray )
+inline FVec3 TraceColor( const Ray& ray, const World& world )
 {
-    const FVec3 oc = ray.GetOrigin() - center;
-    const F32 a = FVec3::Dot( ray.GetDirection(), ray.GetDirection() );
-    const F32 b = 2.f * FVec3::Dot( oc, ray.GetDirection() );
-    const F32 c = FVec3::Dot( oc, oc ) - radius * radius;
-    const F32 discriminant = b*b - 4*a*c;
+    HitRecord record;
+    if ( world.Hit(ray, 0.f, Limits<F32>::Max(), record) )
+        return 0.5f * FVec3(record.Normal.X + 1.f, record.Normal.Y + 1.f, record.Normal.Z + 1.f);
 
-    return (discriminant < 0) ? (-1.f) : ((-b - std::sqrt(discriminant)) / (2.f * a));
-}
-
-FVec3 TraceColor( const Ray& ray )
-{
-    F32 t = HitSphere( FVec3(0.f, 0.f, -1.f), 0.5f, ray );
-    if (t > 0.f)
-    {
-        FVec3 normal = ( ray.GetPointAt(t) - FVec3(0.f, 0.f, -1.f) ).GetUnit();
-        return 0.5f * FVec3(normal.X + 1.f, normal.Y + 1.f, normal.Z + 1.f);
-    }
-
-    FVec3 unitDirection = ray.GetDirection().GetUnit();
-    t = 0.5f * (unitDirection.Y + 1.f);
-    return (1.f - t) * FVec3(1.f) + t * FVec3(.5f, .7f, 1.f);
+    FVec3 unitDirection = ray.Direction.Unit();
+    F32 t = 0.5f * (unitDirection.Y + 1.f);
+    return Math::Blend( FVec3(1.f), FVec3(.5f, .7f, 1.f), t );
 }
 
 int main()
@@ -36,13 +24,17 @@ int main()
     constexpr U32 width  = 400;
     constexpr U32 height = 200;
 
-    std::vector<BVec3> data;
+    std::vector<RGB> data;
     data.reserve( width * height );
 
     constexpr FVec3 lowerLeftCorner( -2.f, -1.f, -1.f );
     constexpr FVec3 horizontal( 4.f, 0.f, 0.f );
     constexpr FVec3 vertical( 0.f, 2.f, 0.f );
     constexpr FVec3 origin( 0.f );
+
+    World world;
+    world.Add<Sphere>( FVec3(0.f, 0.f, -1.f), 0.5f );
+    world.Add<Sphere>( FVec3(0.f, -100.5f, -1.f), 100.f );
 
     for ( S32 j = height - 1; j >= 0; --j )
     {
@@ -51,9 +43,12 @@ int main()
             F32 u = F32(i) / F32(width);
             F32 v = F32(j) / F32(height);
             Ray ray( origin, lowerLeftCorner + u * horizontal + v * vertical );
-            FVec3 fCol = TraceColor(ray);
-            BVec3 iCol( Byte( 255.99 * fCol.R ), Byte( 255.99 * fCol.G ), Byte( 255.99 * fCol.B ) );
-            data.push_back(iCol);
+
+            FVec3 point = ray.PointAt(2.f);
+            FVec3 color = TraceColor(ray, world);
+
+            RGB rgb( Byte( 255.99 * color.R ), Byte( 255.99 * color.G ), Byte( 255.99 * color.B ) );
+            data.push_back(rgb);
         }
     }
 
