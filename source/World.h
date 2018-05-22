@@ -40,7 +40,7 @@ bool World::Hit(const Ray& ray, F32 tMin, F32 tMax, HitRecord& record) const
 {
     HitRecord lastRecord;
     bool hitAnything = false;
-    F64 closestSoFar = tMax;
+    F32 closestSoFar = tMax;
 
     for ( const auto& entity : m_Entities )
     {
