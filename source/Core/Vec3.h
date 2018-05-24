@@ -4,8 +4,8 @@
 #include <iostream>
 #include <xutility>
 
-#include "Types.h"
-#include "Assert.h"
+#include <Core/Types.h>
+#include <Core/Assert.h>
 
 template <typename Type>
 class Vec3
@@ -18,8 +18,8 @@ public:
     constexpr Vec3( const Vec3& v ) noexcept;
     constexpr Vec3( Vec3&& v ) noexcept;
 
-    constexpr Vec3& operator=(const Vec3& v) noexcept;
-    constexpr Vec3& operator=(Vec3&& v) noexcept;
+    constexpr Vec3& operator=( const Vec3& v ) noexcept;
+    constexpr Vec3& operator=( Vec3&& v ) noexcept;
 
     constexpr const Vec3& operator+() const noexcept;
     constexpr Vec3 operator-() const noexcept;
@@ -54,32 +54,32 @@ constexpr Vec3<Type>::Vec3() noexcept = default;
 
 template <typename Type>
 constexpr Vec3<Type>::Vec3( Type t ) noexcept
-    : X(t), Y(t), Z(t)
+    : X( t ), Y( t ), Z( t )
 {
 }
 
 template <typename Type>
 constexpr Vec3<Type>::Vec3( Type x, Type y, Type z ) noexcept
-    : X(x), Y(y), Z(z)
+    : X( x ), Y( y ), Z( z )
 {
 }
 
 template <typename Type>
 constexpr Vec3<Type>::Vec3( const Vec3& v ) noexcept
-    : X(v.X), Y(v.Y), Z(v.Z)
+    : X( v.X ), Y( v.Y ), Z( v.Z )
 {
 }
 
 template <typename Type>
 constexpr Vec3<Type>::Vec3( Vec3&& v ) noexcept
-    : X( std::move(v.X) ), Y( std::move(v.Y) ), Z( std::move(v.Z) )
+    : X( std::move( v.X ) ), Y( std::move( v.Y ) ), Z( std::move( v.Z ) )
 {
 }
 
 template <typename Type>
 constexpr Vec3<Type>& Vec3<Type>::operator=( const Vec3& v ) noexcept
 {
-    if (this != &v)
+    if( this != &v )
     {
         X = v.X;
         Y = v.Y;
@@ -91,7 +91,7 @@ constexpr Vec3<Type>& Vec3<Type>::operator=( const Vec3& v ) noexcept
 template <typename Type>
 constexpr Vec3<Type>& Vec3<Type>::operator=( Vec3<Type>&& v ) noexcept
 {
-    if (this != &v)
+    if( this != &v )
     {
         X = std::exchange( v.X, 0.f );
         Y = std::exchange( v.Y, 0.f );
@@ -113,17 +113,17 @@ constexpr Vec3<Type> Vec3<Type>::operator-() const noexcept
 }
 
 template <typename Type>
-constexpr Type Vec3<Type>::operator[](Size i) const noexcept
+constexpr Type Vec3<Type>::operator[]( Size i ) const noexcept
 {
     Assert( i < 3 );
-    return (&X)[i];
+    return ( &X )[i];
 }
 
 template <typename Type>
-constexpr Type& Vec3<Type>::operator[](Size i) noexcept
+constexpr Type& Vec3<Type>::operator[]( Size i ) noexcept
 {
     Assert( i < 3 );
-    return (&X)[i];
+    return ( &X )[i];
 }
 
 template <typename Type>
@@ -182,14 +182,14 @@ constexpr Vec3<Type>& Vec3<Type>::operator/=( const Type t ) noexcept
 }
 
 template <typename Type>
-constexpr std::istream& operator>>(std::istream& is, Vec3<Type>& v) noexcept
+constexpr std::istream& operator>>( std::istream& is, Vec3<Type>& v ) noexcept
 {
     is >> v.X >> v.Y >> v.Z;
     return is;
 }
 
 template <typename Type>
-inline std::ostream& operator<<(std::ostream& os, const Vec3<Type>& v) noexcept
+inline std::ostream& operator<<( std::ostream& os, const Vec3<Type>& v ) noexcept
 {
     os << v.X << " " << v.Y << " " << v.Z;
     return os;

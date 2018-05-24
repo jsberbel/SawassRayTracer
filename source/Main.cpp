@@ -1,29 +1,29 @@
 #include <vector>
 
-#include "Utils.h"
-#include "Limits.h"
-#include "World.h"
-#include "Sphere.h"
-#include "Camera.h"
+#include <Core/Utils.h>
+#include <Core/Limits.h>
+
+#include <Scene/World.h>
+#include <Scene/Geometry/Sphere.h>
+#include <Scene/Material/Lambertian.h>
+#include <Scene/Material/Metal.h>
+
+#include <Engine/Camera.h>
 
 #define STBI_MSC_SECURE_CRT
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-inline FVec3 RandomPointInUnitSphere()
-{
-    FVec3 point;
-    do point = 2.f * Utils::RandomUnitFVec3() - FVec3(1.f);
-    while( point.SquaredLength() >= 1.f );
-    return point;
-}
-
-inline FVec3 GenerateColor( const Ray& ray, const World& world )
+inline FVec3 GenerateColor( const Ray& ray, const World& world, S32 depth )
 {
     if( HitRecord record; world.Hit( ray, 0.001f, Limits<F32>::Max(), record ) )
     {
-        FVec3 target = record.Point + record.Normal + RandomPointInUnitSphere();
-        return 0.5f * GenerateColor( Ray( record.Point, target - record.Point ), world );
+        Ray scattered;
+        FVec3 attenuation;
+        if( depth < 50 && record.Material->Scatter( ray, record, attenuation, scattered ) )
+            return attenuation * GenerateColor( scattered, world, depth + 1 );
+
+        return FVec3( 0.f );
     }
 
     FVec3 unitDirection = ray.Direction.Normalize();
@@ -42,14 +42,16 @@ int main()
     constexpr U32 width  = 200;
     constexpr U32 height = 100;
     constexpr F32 resolution = width*height;
-    constexpr U32 numSamples = 100;
+    constexpr U32 numSamples = 600;
 
     std::vector<RGB> data;
     data.reserve( width * height );
 
     World world;
-    world.Add<Sphere>( FVec3(0.f, 0.f, -1.f), 0.5f );
-    world.Add<Sphere>( FVec3(0.f, -100.5f, -1.f), 100.f );
+    world.Add<Sphere>( FVec3( 0.f, 0.f, -1.f ),     0.5f,   new Lambertian( FVec3( 0.8f, 0.3f, 0.3f ) ) );
+    world.Add<Sphere>( FVec3( 0.f, -100.5f, -1.f ), 100.f,  new Lambertian( FVec3( 0.8f, 0.8f, 0.f ) ) );
+    world.Add<Sphere>( FVec3( 1.f, 0.f, -1.f ),     0.5f,   new Metal( FVec3( 0.8f, 0.6f, 0.2f ), 0.3f ) );
+    world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),    0.5f,   new Metal( FVec3( 0.8f, 0.8f, 0.8f ), 1.f ) );
 
     Camera camera( FVec3(0.f), F32(width), F32(height) );
 
@@ -66,7 +68,7 @@ int main()
                 F32 v = F32( j + Utils::Random01() ) / F32( height );
                 Ray ray = camera.TraceRay( u, v );
                 FVec3 point = ray.PointAt( 2.f );
-                color += GenerateColor( ray, world );
+                color += GenerateColor( ray, world, 0 );
             }
             color /= F32( numSamples );
             color = FVec3( std::sqrt(color[0]), std::sqrt(color[1]), std::sqrt(color[2]) );

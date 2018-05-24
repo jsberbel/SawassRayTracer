@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Utils.h"
-#include "Hitable.h"
+#include <Core/Utils.h>
+#include <Scene/Geometry/Hitable.h>
 
 class World : public IHitable
 {
@@ -25,7 +25,7 @@ constexpr World::World() = default;
 World::~World()
 {
     for ( auto& entity : m_Entities )
-        delete entity;
+        Utils::SafeDelete( entity );
 
     m_Entities.clear();
 }
@@ -44,10 +44,11 @@ inline bool World::Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) 
 
     for ( const auto& entity : m_Entities )
     {
-        if ( entity->Hit(ray, tMin, closestSoFar, lastRecord) )
+        if( entity->Hit( ray, tMin, closestSoFar, lastRecord ) )
         {
             hitAnything = true;
             closestSoFar = lastRecord.Distance;
+            lastRecord.Material = entity->Material;
             record = lastRecord;
         }
     }

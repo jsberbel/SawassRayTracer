@@ -23,23 +23,22 @@
 #include <tuple>
 #include <sstream>
 
-#include "Types.h"
-#include "Vec3.h"
+#include <Core/Vec3.h>
 
 namespace Utils
 {
-    template <class Type, ENABLE_IF( IS_REAL(Type) || IS_INT(Type) )>
+    template <class Type, ENABLE_IF( IS_REAL( Type ) || IS_INT( Type ) )>
     constexpr Type Random( Type begin, Type end )
     {
         static std::random_device g_RandomDevice;
-        static std::mt19937_64 g_MTEngine(g_RandomDevice());
+        static std::mt19937_64 g_MTEngine( g_RandomDevice() );
 
-        if constexpr ( IS_REAL(Type) )
+        if constexpr( IS_REAL( Type ) )
         {
             std::uniform_real_distribution<Type> distribution( begin, end );
             return distribution( g_MTEngine );
         }
-        else if constexpr (IS_INT(Type))
+        else if constexpr( IS_INT( Type ) )
         {
             std::uniform_int_distribution<Type> distribution( begin, end );
             return distribution( g_MTEngine );
@@ -56,9 +55,27 @@ namespace Utils
         return FVec3( Random01(), Random01(), Random01() );
     }
 
-    template<class... Args>
+    constexpr FVec3 RandomPointInUnitSphere()
+    {
+        FVec3 point;
+        do point = 2.f * Utils::RandomUnitFVec3() - FVec3( 1.f );
+        while( point.SquaredLength() >= 1.f );
+        return point;
+    }
+
+    template <class... Args>
     constexpr void DebugLog( const std::string& format, Args&&... args )
     {
-        printf( (format + "\n").c_str(), std::forward<Args>(args)... );
+        printf( ( format + "\n" ).c_str(), std::forward<Args>( args )... );
+    }
+
+    template <class Type, ENABLE_IF( IS_POINTER( Type ) ) >
+    constexpr void SafeDelete( Type& ptr )
+    {
+        if( ptr != nullptr )
+        {
+            delete ptr;
+            ptr = nullptr;
+        }
     }
 }

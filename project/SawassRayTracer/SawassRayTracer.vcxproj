@@ -18,6 +18,25 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\source\Core\Assert.h" />
+    <ClInclude Include="..\..\source\Core\Limits.h" />
+    <ClInclude Include="..\..\source\Core\Math.h" />
+    <ClInclude Include="..\..\source\Core\Types.h" />
+    <ClInclude Include="..\..\source\Core\Utils.h" />
+    <ClInclude Include="..\..\source\Core\Vec3.h" />
+    <ClInclude Include="..\..\source\Engine\Camera.h" />
+    <ClInclude Include="..\..\source\Engine\Ray.h" />
+    <ClInclude Include="..\..\source\Scene\Geometry\Hitable.h" />
+    <ClInclude Include="..\..\source\Scene\Geometry\Sphere.h" />
+    <ClInclude Include="..\..\source\Scene\Material\Lambertian.h" />
+    <ClInclude Include="..\..\source\Scene\Material\Material.h" />
+    <ClInclude Include="..\..\source\Scene\Material\Metal.h" />
+    <ClInclude Include="..\..\source\Scene\World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\source\Main.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{4ED189E2-F206-43A5-84E4-051998162A7B}</ProjectGuid>
@@ -72,18 +91,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\..\output\$(Platform)$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\output\tmp\$(Platform)$(Configuration)\</IntDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)\..\source\;</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\..\source\;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\..\output\$(Platform)$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\output\tmp\$(Platform)$(Configuration)\</IntDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)\..\source\;</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\..\source\;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)\..\output\$(Platform)$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\output\tmp\$(Platform)$(Configuration)\</IntDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)\..\source\;</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\..\source\;</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)\..\output\$(Platform)$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)\..\output\tmp\$(Platform)$(Configuration)\</IntDir>
+    <SourcePath>$(VC_SourcePath);$(SolutionDir)\..\source\;</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)\..\source\;</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -137,22 +164,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\source\Assert.h" />
-    <ClInclude Include="..\..\source\Camera.h" />
-    <ClInclude Include="..\..\source\Hitable.h" />
-    <ClInclude Include="..\..\source\Limits.h" />
-    <ClInclude Include="..\..\source\Math.h" />
-    <ClInclude Include="..\..\source\Ray.h" />
-    <ClInclude Include="..\..\source\Sphere.h" />
-    <ClInclude Include="..\..\source\Types.h" />
-    <ClInclude Include="..\..\source\Utils.h" />
-    <ClInclude Include="..\..\source\Vec3.h" />
-    <ClInclude Include="..\..\source\World.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\source\Main.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
