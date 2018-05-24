@@ -8,19 +8,19 @@
 class World : public IHitable
 {
 public:
-    World();
+    constexpr World();
     ~World();
     
     template <class TEntity, class... TArgs, ENABLE_IF(IS_BASE_OF(IHitable, TEntity))>
-    constexpr void Add(TArgs&&... args);
+    constexpr void Add( TArgs&&... args );
 
-    bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const override;
+    inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const override;
 
 private:
     std::vector<IHitable*> m_Entities;
 };
 
-World::World() = default;
+constexpr World::World() = default;
 
 World::~World()
 {
@@ -31,12 +31,12 @@ World::~World()
 }
 
 template <class TEntity, class... TArgs, class>
-constexpr void World::Add(TArgs&&... args)
+constexpr void World::Add( TArgs&&... args )
 {
     m_Entities.emplace_back( new TEntity(std::forward<TArgs>(args)...) );
 }
 
-bool World::Hit(const Ray& ray, F32 tMin, F32 tMax, HitRecord& record) const
+inline bool World::Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const
 {
     HitRecord lastRecord;
     bool hitAnything = false;

@@ -8,7 +8,7 @@ public:
     constexpr Ray() noexcept;
     constexpr Ray( const FVec3& origin, const FVec3& direction ) noexcept;
 
-    inline FVec3 PointAt( F32 t ) const noexcept;
+    constexpr FVec3 PointAt( F32 t ) const noexcept;
 
 public:
     const FVec3 Origin;
@@ -18,11 +18,11 @@ public:
 constexpr Ray::Ray() noexcept = default;
 
 constexpr Ray::Ray( const FVec3& origin, const FVec3& direction ) noexcept
-    : Origin(origin), Direction(direction)
+    : Origin(origin), Direction(direction.Normalize())
 {
 }
 
-inline FVec3 Ray::PointAt(F32 t) const noexcept
+constexpr FVec3 Ray::PointAt(F32 t) const noexcept
 {
     return Origin + t * Direction;
 }

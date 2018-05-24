@@ -17,3 +17,42 @@
 #define CAN_CAST(FROM, TO)          std::is_convertible<FROM, TO>::value
 #define IF(CONDITION, THEN, ELSE)   std::conditional<CONDITION, THEN, ELSE>::type
 #define ADD_ALL(Ts)                 Framework::Utils::AddAllTrait< sizeof(Ts)... >::value
+
+#include <random>
+#include <iostream>
+#include <tuple>
+#include <sstream>
+
+#include "Types.h"
+
+namespace Utils
+{
+    template <class Type, ENABLE_IF( IS_REAL(Type) || IS_INT(Type) )>
+    constexpr Type Random( Type begin, Type end )
+    {
+        static std::random_device g_RandomDevice;
+        static std::mt19937_64 g_MTEngine(g_RandomDevice());
+
+        if constexpr ( IS_REAL(Type) )
+        {
+            std::uniform_real_distribution<Type> distribution( begin, end );
+            return distribution( g_MTEngine );
+        }
+        else if constexpr (IS_INT(Type))
+        {
+            std::uniform_int_distribution<Type> distribution( begin, end );
+            return distribution( g_MTEngine );
+        }
+    }
+
+    constexpr F64 Random01()
+    {
+        return Random( 0., 1. );
+    }
+
+    template<class... Args>
+    constexpr void DebugLog( const std::string& format, Args&&... args )
+    {
+        printf( (format + "\n").c_str(), std::forward<Args>(args)... );
+    }
+}

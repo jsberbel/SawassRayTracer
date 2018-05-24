@@ -6,25 +6,25 @@
 class Sphere : public IHitable
 {
 public:
-    Sphere();
-    Sphere( const FVec3& center, F32 radius );
+    constexpr Sphere();
+    constexpr Sphere( const FVec3& center, F32 radius );
 
-    bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const override;
+    inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const override;
 
 private:
-    bool Solve( F32 root, F32 tMin, F32 tMax, const Ray& ray, HitRecord& record ) const;
+    constexpr bool Solve( F32 root, F32 tMin, F32 tMax, const Ray& ray, HitRecord& record ) const;
 
 public:
     FVec3 Center;
     F32   Radius;
 };
 
-Sphere::Sphere() = default;
+constexpr Sphere::Sphere() = default;
 
-Sphere::Sphere( const FVec3& center, F32 radius )
+constexpr Sphere::Sphere(const FVec3& center, F32 radius)
     : Center(center), Radius(radius) {}
 
-bool Sphere::Solve( F32 root, F32 tMin, F32 tMax, const Ray& ray, HitRecord& record ) const
+constexpr bool Sphere::Solve( F32 root, F32 tMin, F32 tMax, const Ray& ray, HitRecord& record ) const
 {
     if (root > tMin && root < tMax)
     {
@@ -36,7 +36,7 @@ bool Sphere::Solve( F32 root, F32 tMin, F32 tMax, const Ray& ray, HitRecord& rec
     return false;
 }
 
-bool Sphere::Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const
+inline bool Sphere::Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const
 {
     // Sphere equations:
     // x*x + y*y + z*z = R*R
