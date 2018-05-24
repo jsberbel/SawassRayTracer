@@ -24,6 +24,7 @@
 #include <sstream>
 
 #include "Types.h"
+#include "Vec3.h"
 
 namespace Utils
 {
@@ -45,9 +46,14 @@ namespace Utils
         }
     }
 
-    constexpr F64 Random01()
+    constexpr F32 Random01()
     {
-        return Random( 0., 1. );
+        return Random( 0.f, 1.f );
+    }
+
+    constexpr FVec3 RandomUnitFVec3()
+    {
+        return FVec3( Random01(), Random01(), Random01() );
     }
 
     template<class... Args>

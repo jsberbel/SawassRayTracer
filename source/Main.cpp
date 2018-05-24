@@ -10,15 +10,31 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+inline FVec3 RandomPointInUnitSphere()
+{
+    FVec3 point;
+    do point = 2.f * Utils::RandomUnitFVec3() - FVec3(1.f);
+    while( point.SquaredLength() >= 1.f );
+    return point;
+}
+
 inline FVec3 GenerateColor( const Ray& ray, const World& world )
 {
-    HitRecord record;
-    if ( world.Hit(ray, 0.f, Limits<F32>::Max(), record) )
-        return 0.5f * FVec3(record.Normal.X + 1.f, record.Normal.Y + 1.f, record.Normal.Z + 1.f);
+    if( HitRecord record; world.Hit( ray, 0.001f, Limits<F32>::Max(), record ) )
+    {
+        FVec3 target = record.Point + record.Normal + RandomPointInUnitSphere();
+        return 0.5f * GenerateColor( Ray( record.Point, target - record.Point ), world );
+    }
 
     FVec3 unitDirection = ray.Direction.Normalize();
-    F32 t = 0.5f * (unitDirection.Y + 1.f);
+    F32 t = 0.5f * ( unitDirection.Y + 1.f );
     return Math::Blend( FVec3(1.f), FVec3(.5f, .7f, 1.f), t );
+}
+
+inline FVec3 GammaCorrection( const FVec3& color )
+{
+    // Formula: Vout = A * pow( Vin, y ) with A = 1 and y = 1/2
+    return FVec3( std::sqrt(color.R), std::sqrt(color.G), std::sqrt(color.B) );
 }
 
 int main()
@@ -53,6 +69,7 @@ int main()
                 color += GenerateColor( ray, world );
             }
             color /= F32( numSamples );
+            color = FVec3( std::sqrt(color[0]), std::sqrt(color[1]), std::sqrt(color[2]) );
 
             RGB rgb( Byte( 255.99 * color.R ), Byte( 255.99 * color.G ), Byte( 255.99 * color.B ) );
             data.push_back(rgb);
