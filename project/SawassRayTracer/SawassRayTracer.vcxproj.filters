@@ -64,6 +64,9 @@
     <ClInclude Include="..\..\source\Scene\World.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\source\Scene\Material\Dielectric.h">
+      <Filter>Source\Scene\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\source\Main.cpp">

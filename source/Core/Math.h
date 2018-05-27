@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Core/Vec3.h>
+#include <Core/Assert.h>
 
 namespace Math
 {
@@ -21,8 +22,28 @@ namespace Math
     }
 
     template <class Type>
-    constexpr Type Blend(Type start, Type end, F32 t)
+    constexpr Type Blend( const Type& start, const Type& end, F32 t )
     {
         return (1.f - t) * start + t * end;
+    }
+
+    template<class Type, class Compare>
+    constexpr Type Clamp( const Type& v, const Type& low, const Type& hi, Compare comp )
+    {
+        return Assert( !comp( hi, low ) ),
+               comp( v, low ) ? low : comp( hi, v ) ? hi : v;
+    }
+
+    template<class Type>
+    constexpr Type Clamp( const Type& v, const Type& low, const Type& hi )
+    {
+        return Clamp( v, low, hi, std::less<>() );
+    }
+
+    template <typename Type>
+    constexpr Type Pow( Type num, U32 pow )
+    {
+        return ( pow >= sizeof( U32 ) * 8 ) ? 0 :
+                 pow == 0 ? 1 : num * Pow( num, pow - 1 );
     }
 }

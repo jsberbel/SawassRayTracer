@@ -7,6 +7,7 @@
 #include <Scene/Geometry/Sphere.h>
 #include <Scene/Material/Lambertian.h>
 #include <Scene/Material/Metal.h>
+#include <Scene/Material/Dielectric.h>
 
 #include <Engine/Camera.h>
 
@@ -48,10 +49,11 @@ int main()
     data.reserve( width * height );
 
     World world;
-    world.Add<Sphere>( FVec3( 0.f, 0.f, -1.f ),     0.5f,   new Lambertian( FVec3( 0.8f, 0.3f, 0.3f ) ) );
-    world.Add<Sphere>( FVec3( 0.f, -100.5f, -1.f ), 100.f,  new Lambertian( FVec3( 0.8f, 0.8f, 0.f ) ) );
-    world.Add<Sphere>( FVec3( 1.f, 0.f, -1.f ),     0.5f,   new Metal( FVec3( 0.8f, 0.6f, 0.2f ), 0.3f ) );
-    world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),    0.5f,   new Metal( FVec3( 0.8f, 0.8f, 0.8f ), 1.f ) );
+    world.Add<Sphere>( FVec3( 0.f, 0.f, -1.f ),       0.5f,    Lambertian( FVec3( 0.8f, 0.3f, 0.3f ) ) );
+    world.Add<Sphere>( FVec3( 0.f, -100.5f, -1.f ),   100.f,   Lambertian( FVec3( 0.8f, 0.8f, 0.f ) ) );
+    world.Add<Sphere>( FVec3( 1.f, 0.f, -1.f ),       0.5f,    Metal( FVec3( 0.8f, 0.6f, 0.2f ), 0.3f ) );
+    world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),      0.5f,    Dielectric( 1.5f ) );
+    world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),     -0.45f,   Dielectric( 1.5f ) );
 
     Camera camera( FVec3(0.f), F32(width), F32(height) );
 

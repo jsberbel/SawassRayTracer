@@ -11,7 +11,7 @@ class Sphere : public IHitable
 {
 public:
     constexpr Sphere();
-    constexpr Sphere( const FVec3& center, F32 radius, IMaterial* material );
+    template <class TMaterial> constexpr Sphere( const FVec3& center, F32 radius, TMaterial&& material );
     ~Sphere() override = default;
 
     inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const override;
@@ -31,11 +31,12 @@ constexpr Sphere::Sphere()
     Material = nullptr;
 }
 
-constexpr Sphere::Sphere( const FVec3& center, F32 radius, IMaterial* material )
+template <class TMaterial> 
+constexpr Sphere::Sphere( const FVec3& center, F32 radius, TMaterial&& material )
     : Center( center )
     , Radius( radius )
 {
-    Material = material;
+    Material = new TMaterial( std::forward<TMaterial>( material ));
 }
 
 constexpr bool Sphere::Solve( F32 root, F32 tMin, F32 tMax, const Ray& ray, HitRecord& record ) const

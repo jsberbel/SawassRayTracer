@@ -14,7 +14,6 @@ public:
     constexpr Metal( const FVec3& albedo, F32 fuzziness ) noexcept;
 
     inline bool Scatter( const Ray& inRay, const HitRecord& record, FVec3& attenuation, Ray& scattered ) const noexcept override;
-    inline FVec3 Reflect( const FVec3& v, const FVec3& n ) const noexcept;
 
 public:
     FVec3 Albedo;
@@ -23,7 +22,7 @@ public:
 
 constexpr Metal::Metal( const FVec3& albedo, F32 fuzziness ) noexcept
     : Albedo( albedo )
-    , Fuzziness( fuzziness < 1.f ? fuzziness : 1.f )
+    , Fuzziness( Math::Clamp( fuzziness, 0.f, 1.f ) )
 {}
 
 inline bool Metal::Scatter(const Ray& inRay, const HitRecord& record, FVec3& attenuation, Ray& scattered) const noexcept
@@ -32,9 +31,4 @@ inline bool Metal::Scatter(const Ray& inRay, const HitRecord& record, FVec3& att
     scattered = Ray( record.Point, reflected + Fuzziness * Utils::RandomPointInUnitSphere() );
     attenuation = Albedo;
     return( Math::Dot( scattered.Direction, record.Normal ) > 0.f );
-}
-
-inline FVec3 Metal::Reflect( const FVec3& v, const FVec3& n ) const noexcept
-{
-    return v - 2.f * Math::Dot( v, n ) * n;
 }
