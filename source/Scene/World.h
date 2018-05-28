@@ -5,7 +5,7 @@
 #include <Core/Utils.h>
 #include <Scene/Geometry/Hitable.h>
 
-class World : public IHitable
+class World
 {
 public:
     constexpr World();
@@ -14,7 +14,7 @@ public:
     template <class TEntity, class... TArgs, ENABLE_IF(IS_BASE_OF(IHitable, TEntity))>
     constexpr void Add( TArgs&&... args );
 
-    inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const override;
+    inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const;
 
 private:
     std::vector<IHitable*> m_Entities;

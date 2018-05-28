@@ -38,30 +38,72 @@ inline FVec3 GammaCorrection( const FVec3& color )
     return FVec3( std::sqrt(color.R), std::sqrt(color.G), std::sqrt(color.B) );
 }
 
+inline World GenerateRandomSpheresWorld()
+{
+    U32 nbSpheres = 50u;
+
+    World world;
+    world.Add<Sphere>( FVec3( 0.f, -1000.f, 0.f ), 1000.f, Lambertian( FVec3( 0.5f ) ) );
+
+    for( S32 a = -11; a < 11; ++a )
+    {
+        for( S32 b = -11; b < 11; ++b )
+        {
+            F32 chooseMat = Utils::Random01();
+            FVec3 center( a + 0.9f*Utils::Random01(), 0.2f, b + 0.9f*Utils::Random01() );
+            if( ( center - FVec3( 4.f, 0.2f, 0.f ) ).Length() > 0.9f )
+            {
+                if( chooseMat < 0.8f ) // Diffuse
+                {
+                    auto RandomQuadraticUnit = []() constexpr { return Utils::Random01() * Utils::Random01(); };
+                    world.Add<Sphere>( center, 0.2f, Lambertian( FVec3( RandomQuadraticUnit(), RandomQuadraticUnit(), RandomQuadraticUnit() ) ) );
+                }
+                else if( chooseMat < 0.95f ) // Metal
+                {
+                    auto RandomSemiUnit = []() constexpr { return 0.5f*( 1.f + Utils::Random01() ); };
+                    world.Add<Sphere>( center, 0.2f, Metal( FVec3( RandomSemiUnit(), RandomSemiUnit(), RandomSemiUnit() ), 0.5f*Utils::Random01() ) );
+                }
+                else // Glass
+                {
+                    world.Add<Sphere>( center, 0.2f, Dielectric( 1.5f ) );
+                }
+            }
+        }
+    }
+
+    world.Add<Sphere>( FVec3(0.f, 1.f, 0.f),  1.f, Dielectric( 1.5f ) );
+    world.Add<Sphere>( FVec3(-4.f, 1.f, 0.f), 1.f, Lambertian( FVec3(0.4f, 0.2f, 0.1f) ) );
+    world.Add<Sphere>( FVec3(4.f, 1.f, 0.f),  1.f, Metal( FVec3(0.7f, 0.6f, 0.5f), 0.f ) );
+
+    return world;
+}
+
 int main()
 {
     constexpr U32 width  = 200;
     constexpr U32 height = 100;
     constexpr F32 resolution = width*height;
-    constexpr U32 numSamples = 800;
+    constexpr U32 numSamples = 20;
 
     std::vector<RGB> data;
     data.reserve( width * height );
 
-    World world;
-    world.Add<Sphere>( FVec3( 0.f, 0.f, -1.f ),       0.5f,    Lambertian( FVec3( 0.8f, 0.3f, 0.3f ) ) );
+    World world = GenerateRandomSpheresWorld();
+
+    /*world.Add<Sphere>( FVec3( 0.f, 0.f, -1.f ),       0.5f,    Lambertian( FVec3( 0.8f, 0.3f, 0.3f ) ) );
     world.Add<Sphere>( FVec3( 0.f, -100.5f, -1.f ),   100.f,   Lambertian( FVec3( 0.8f, 0.8f, 0.f ) ) );
     world.Add<Sphere>( FVec3( 1.f, 0.f, -1.f ),       0.5f,    Metal( FVec3( 0.8f, 0.6f, 0.2f ), 0.3f ) );
     world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),      0.5f,    Dielectric( 1.5f ) );
-    world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),     -0.45f,   Dielectric( 1.5f ) );
+    world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),     -0.45f,   Dielectric( 1.5f ) );*/
+
     /*F32 R = std::cos( Math::PI<F32> / 4.f );
     world.Add<Sphere>( FVec3( -R, 0.f, -1.f ), R, Lambertian( FVec3( 0.f, 0.f, 1.f ) ) );
     world.Add<Sphere>( FVec3( +R, 0.f, -1.f ), R, Lambertian( FVec3( 1.f, 0.f, 0.f ) ) );*/
 
-    const FVec3 lookFrom( 3.f, 3.f, 2.f );
-    const FVec3 lookAt( 0.f, 0.f, -1.f );
-    const F32 aperture = 2.f;
-    const F32 distToFocus = ( lookFrom - lookAt ).Length();
+    const FVec3 lookFrom( 13.f, 2.f, 3.f );
+    const FVec3 lookAt( 0.f );
+    const F32 aperture = 0.1f;
+    const F32 distToFocus = 10.f; //( lookFrom - lookAt ).Length();
     Camera camera( lookFrom, lookAt, F32(width), F32(height), 20, aperture, distToFocus );
 
     F32 progress = 0;

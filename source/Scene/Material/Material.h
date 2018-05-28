@@ -26,10 +26,10 @@ constexpr bool IMaterial::Refract( const FVec3& vector, const FVec3& normal, F32
 {
     FVec3 incident = vector.Normalize();
     F32 cosIncident = Math::Dot( incident, normal );
-    F32 discriminant = 1.f - refractiveRatio * refractiveRatio * ( 1.f - cosIncident * cosIncident );
+    F32 discriminant = 1.f - refractiveRatio*refractiveRatio * ( 1.f - cosIncident*cosIncident );
     if (discriminant > 0.f)
     {
-        refracted = refractiveRatio * ( incident - normal * cosIncident ) - normal * std::sqrt( discriminant );
+        refracted = refractiveRatio * ( incident - normal*cosIncident ) - normal*std::sqrt( discriminant );
         return true;
     }
     return false;

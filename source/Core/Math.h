@@ -31,8 +31,8 @@ namespace Math
     template<class Type, class Compare>
     constexpr Type Clamp( const Type& v, const Type& low, const Type& hi, Compare comp )
     {
-        return Assert( !comp( hi, low ) ),
-               comp( v, low ) ? low : comp( hi, v ) ? hi : v;
+        Assert( !comp( hi, low ) );
+        return comp( v, low ) ? low : comp( hi, v ) ? hi : v;
     }
 
     template<class Type>

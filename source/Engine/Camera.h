@@ -45,5 +45,5 @@ constexpr Ray Camera::TraceRay( F32 s, F32 t )
 {
     const FVec3 rd = LensRadius * Utils::RandomPointInUnitDisk();
     const FVec3 offset = ( U * rd.X ) + ( V * rd.Y );
-    return Ray( Origin + offset, LowerLeftCorner + s * Horizontal + t * Vertical - Origin - offset );
+    return Ray( Origin + offset, LowerLeftCorner + s*Horizontal + t*Vertical - Origin - offset );
 }
