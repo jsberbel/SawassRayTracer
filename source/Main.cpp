@@ -54,8 +54,11 @@ int main()
     world.Add<Sphere>( FVec3( 1.f, 0.f, -1.f ),       0.5f,    Metal( FVec3( 0.8f, 0.6f, 0.2f ), 0.3f ) );
     world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),      0.5f,    Dielectric( 1.5f ) );
     world.Add<Sphere>( FVec3( -1.f, 0.f, -1.f ),     -0.45f,   Dielectric( 1.5f ) );
+    /*F32 R = std::cos( Math::PI<F32> / 4.f );
+    world.Add<Sphere>( FVec3( -R, 0.f, -1.f ), R, Lambertian( FVec3( 0.f, 0.f, 1.f ) ) );
+    world.Add<Sphere>( FVec3( +R, 0.f, -1.f ), R, Lambertian( FVec3( 1.f, 0.f, 0.f ) ) );*/
 
-    Camera camera( FVec3(0.f), F32(width), F32(height) );
+    Camera camera( FVec3(-2.f, 2.f, 1.f), FVec3(0.f, 0.f, -1.f), F32(width), F32(height), 90 );
 
     F32 progress = 0;
 
@@ -79,13 +82,13 @@ int main()
             data.push_back(rgb);
 
             const F32 percentage = (++progress / resolution) * 100.f;
-            Utils::DebugLog( "Progress: %.2f%% - Computing pixel [%d, %d] = { %d, %d, %d }", percentage, j, i, rgb.R, rgb.G, rgb.G );
+            Utils::ConsoleOutput( "Progress: %.2f%% - Computing pixel [%d, %d] = { %d, %d, %d }", percentage, j, i, rgb.R, rgb.G, rgb.G );
         }
     }
 
     if ( stbi_write_png( "output.png", width, height, 3, &data[0], 0 ) )
     {
-        Utils::DebugLog( "Image saved successfully!" );
+        Utils::ConsoleOutput( "Image saved successfully!" );
     }
 
     return 0;

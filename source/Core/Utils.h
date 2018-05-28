@@ -64,7 +64,7 @@ namespace Utils
     }
 
     template <class... Args>
-    constexpr void DebugLog( const std::string& format, Args&&... args )
+    constexpr void ConsoleOutput( const std::string& format, Args&&... args )
     {
         printf( ( format + "\n" ).c_str(), std::forward<Args>( args )... );
     }

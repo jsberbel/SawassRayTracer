@@ -5,9 +5,7 @@
 class Camera
 {
 public:
-    constexpr Camera();
-    constexpr Camera( const FVec3& origin, F32 width, F32 height );
-
+    inline Camera( FVec3 lookFrom, FVec3 lookAt, F32 width, F32 height, F32 vFOV );
     constexpr Ray TraceRay( F32 u, F32 v );
 
 public:
@@ -17,16 +15,23 @@ public:
     FVec3 Vertical;
 };
 
-constexpr Camera::Camera() = default;
-
-constexpr Camera::Camera( const FVec3& origin, F32 width, F32 height )
-    : Origin(origin)
+inline Camera::Camera( FVec3 lookFrom, FVec3 lookAt, F32 width, F32 height, F32 vFOV ) // vertical FOV is top to bottom in degrees
 {
-    const F32 widthRatio = width / 50.f;
-    const F32 heightRatio = height / 50.f;
-    LowerLeftCorner = FVec3( -widthRatio*0.5f, -heightRatio*0.5f, -1.f );
-    Horizontal = FVec3( widthRatio, 0.f, 0.f );
-    Vertical = FVec3( 0.f, heightRatio, 0.f );
+    const F32 aspectRatio = width / height;
+    const F32 theta       = vFOV * ( Math::PI<F32> / 180.f );
+    const F32 halfHeight  = std::tan( theta / 2.f );
+    const F32 halfWidth   = aspectRatio * halfHeight;
+    const FVec3 up        = FVec3( 0.f, 1.f, 0.f );
+
+    const FVec3 w = ( lookFrom - lookAt ).Normalize();
+    const FVec3 u = Math::Cross( up, w ).Normalize();
+    const FVec3 v = Math::Cross( w, u );
+
+    Origin          = lookFrom;
+    LowerLeftCorner = FVec3( -halfWidth, -halfHeight, -1.f );
+    LowerLeftCorner = Origin - halfWidth * u - halfHeight * v - w;
+    Horizontal      = 2.f * halfWidth  * u;
+    Vertical        = 2.f * halfHeight * v;
 }
 
 constexpr Ray Camera::TraceRay( F32 u, F32 v )

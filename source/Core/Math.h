@@ -5,7 +5,8 @@
 
 namespace Math
 {
-    inline constexpr auto k_PI = 3.141592653589793238462643383279502884L;
+    template <class Type> 
+    constexpr F32 PI = Type(3.141592653589793238462643383279502884L);
 
     template <typename Type>
     constexpr Type Dot(const Vec3<Type>& lhs, const Vec3<Type>& rhs) noexcept
