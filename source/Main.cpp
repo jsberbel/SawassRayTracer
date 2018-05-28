@@ -43,7 +43,7 @@ int main()
     constexpr U32 width  = 200;
     constexpr U32 height = 100;
     constexpr F32 resolution = width*height;
-    constexpr U32 numSamples = 600;
+    constexpr U32 numSamples = 800;
 
     std::vector<RGB> data;
     data.reserve( width * height );
@@ -58,7 +58,11 @@ int main()
     world.Add<Sphere>( FVec3( -R, 0.f, -1.f ), R, Lambertian( FVec3( 0.f, 0.f, 1.f ) ) );
     world.Add<Sphere>( FVec3( +R, 0.f, -1.f ), R, Lambertian( FVec3( 1.f, 0.f, 0.f ) ) );*/
 
-    Camera camera( FVec3(-2.f, 2.f, 1.f), FVec3(0.f, 0.f, -1.f), F32(width), F32(height), 90 );
+    const FVec3 lookFrom( 3.f, 3.f, 2.f );
+    const FVec3 lookAt( 0.f, 0.f, -1.f );
+    const F32 aperture = 2.f;
+    const F32 distToFocus = ( lookFrom - lookAt ).Length();
+    Camera camera( lookFrom, lookAt, F32(width), F32(height), 20, aperture, distToFocus );
 
     F32 progress = 0;
 

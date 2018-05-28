@@ -24,6 +24,7 @@
 #include <sstream>
 
 #include <Core/Vec3.h>
+#include <Core/Math.h>
 
 namespace Utils
 {
@@ -56,6 +57,14 @@ namespace Utils
     }
 
     constexpr FVec3 RandomPointInUnitSphere()
+    {
+        FVec3 point;
+        do point = 2.f * FVec3( Utils::Random01(), Utils::Random01(), 0.f) - FVec3( 1.f, 1.f, 0.f );
+        while( Math::Dot( point, point ) >= 1.f );
+        return point;
+    }
+
+    constexpr FVec3 RandomPointInUnitDisk()
     {
         FVec3 point;
         do point = 2.f * Utils::RandomUnitFVec3() - FVec3( 1.f );
