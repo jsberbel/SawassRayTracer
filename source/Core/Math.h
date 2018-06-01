@@ -47,4 +47,80 @@ namespace Math
         return ( pow >= sizeof( U32 ) * 8 ) ? 0 :
                  pow == 0 ? 1 : num * Pow( num, pow - 1 );
     }
+
+    template<typename T>
+    using return_t = typename std::conditional<std::is_integral<T>::value, double, T>::type;
+
+    #ifndef GCEM_PI
+    #define GCEM_PI 3.14159265358979323846L
+    #endif
+
+    template<class T>
+    using GCLIM = std::numeric_limits<T>;
+
+    template<typename T>
+    constexpr
+        T
+        Abs( const T x )
+    {
+        return( x < T( 0 ) ? -x : x );
+    }
+
+        template<typename T>
+    constexpr
+    T
+    tan_cf_recur(const T xx, const int depth, const int max_depth)
+    {
+        return( depth < max_depth ? \
+                // if
+                    T(2*depth - 1) - xx/tan_cf_recur(xx,depth+1,max_depth) :
+                // else
+                    T(2*depth - 1) );
+    }
+
+    template<typename T>
+    constexpr
+    T
+    tan_cf_main(const T x)
+    {
+        return( x > T(1) ? \
+                // if
+                    x/tan_cf_recur(x*x,1,35) :
+                // else
+                    x/tan_cf_recur(x*x,1,25) );
+    }
+
+    template<typename T>
+    constexpr
+    T
+    tan_int(const T x)
+    {   // tan(x) = tan(x + pi)
+        return( x > T(GCEM_PI) ? \
+                // if
+                    tan_int( x - T(GCEM_PI) * int(x/T(GCEM_PI)) ) :
+                // else 
+                    tan_cf_main(x) );
+    }
+
+    template<typename T>
+    constexpr
+    T
+    tan_check(const T x)
+    {
+        return( // indistinguishable from zero 
+                GCLIM<T>::epsilon() > Abs(x) ? \
+                    T(0) :
+                // else
+                    x < T(0) ? \
+                        - tan_int(-x) : 
+                          tan_int( x) );
+    }
+
+    template<typename T>
+    constexpr
+    return_t<T>
+    Tan(const T x)
+    {
+        return tan_check<return_t<T>>(x);
+    }
 }

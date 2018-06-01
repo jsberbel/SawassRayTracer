@@ -11,12 +11,10 @@
 
 #include <Engine/Camera.h>
 
-#define STBI_MSC_SECURE_CRT
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-
 inline FVec3 GenerateColor( const Ray& ray, const World& world, S32 depth )
 {
+    const auto markGuard = Utils::CreateBenchmarkGuard( "GenerateColor" );
+
     if( HitRecord record; world.Hit( ray, 0.001f, Limits<F32>::Max(), record ) )
     {
         Ray scattered;
@@ -35,11 +33,13 @@ inline FVec3 GenerateColor( const Ray& ray, const World& world, S32 depth )
 inline FVec3 GammaCorrection( const FVec3& color )
 {
     // Formula: Vout = A * pow( Vin, y ) with A = 1 and y = 1/2
-    return FVec3( std::sqrt(color.R), std::sqrt(color.G), std::sqrt(color.B) );
+    return FVec3( std::sqrt(color.X), std::sqrt(color.Y), std::sqrt(color.Z) );
 }
 
 inline World GenerateRandomSpheresWorld()
 {
+    const auto markGuard = Utils::CreateBenchmarkGuard( "GenerateRandomSpheresWorld" );
+
     U32 nbSpheres = 50u;
 
     World world;
@@ -80,10 +80,10 @@ inline World GenerateRandomSpheresWorld()
 
 int main()
 {
-    constexpr U32 width  = 200;
+    constexpr U32 width  = 100;
     constexpr U32 height = 100;
     constexpr F32 resolution = width*height;
-    constexpr U32 numSamples = 20;
+    constexpr U32 numSamples = 2;
 
     std::vector<RGB> data;
     data.reserve( width * height );
@@ -100,16 +100,18 @@ int main()
     world.Add<Sphere>( FVec3( -R, 0.f, -1.f ), R, Lambertian( FVec3( 0.f, 0.f, 1.f ) ) );
     world.Add<Sphere>( FVec3( +R, 0.f, -1.f ), R, Lambertian( FVec3( 1.f, 0.f, 0.f ) ) );*/
 
-    const FVec3 lookFrom( 13.f, 2.f, 3.f );
-    const FVec3 lookAt( 0.f );
-    const F32 aperture = 0.1f;
-    const F32 distToFocus = 10.f; //( lookFrom - lookAt ).Length();
-    Camera camera( lookFrom, lookAt, F32(width), F32(height), 20, aperture, distToFocus );
+    constexpr FVec3 lookFrom( 13.f, 2.f, 3.f );
+    constexpr FVec3 lookAt( 0.f );
+    constexpr F32 aperture = 0.1f;
+    constexpr F32 distToFocus = 10.f; //( lookFrom - lookAt ).Length();
+    Camera camera( lookFrom, lookAt, F32(width) / F32(height), 20, aperture, distToFocus );
 
     F32 progress = 0;
 
     for ( S32 j = height - 1; j >= 0; --j )
     {
+        const auto markGuard = Utils::CreateBenchmarkGuard( "ComputePixelRow" );
+
         for ( S32 i = 0; i < width; ++i )
         {
             FVec3 color( 0.f );
@@ -124,7 +126,7 @@ int main()
             color /= F32( numSamples );
             color = FVec3( std::sqrt(color[0]), std::sqrt(color[1]), std::sqrt(color[2]) );
 
-            RGB rgb( Byte( 255.99 * color.R ), Byte( 255.99 * color.G ), Byte( 255.99 * color.B ) );
+            RGB rgb( Byte( 255.99 * color.X ), Byte( 255.99 * color.Y ), Byte( 255.99 * color.Z ) );
             data.push_back(rgb);
 
             const F32 percentage = (++progress / resolution) * 100.f;
@@ -132,10 +134,8 @@ int main()
         }
     }
 
-    if ( stbi_write_png( "output.png", width, height, 3, &data[0], 0 ) )
-    {
-        Utils::ConsoleOutput( "Image saved successfully!" );
-    }
+    Utils::OutputImageToFile( width, height, data );
+    Utils::OutputBenchmarksToFile();
 
     return 0;
 }

@@ -239,7 +239,7 @@ constexpr Vec3<Type> operator/( const Vec3<Type>& lhs, const Vec3<Type>& rhs ) n
 }
 
 template <typename Type>
-constexpr Vec3<Type> operator*( Type t, const Vec3<Type>& v ) noexcept
+constexpr Vec3<Type> operator*( const Type& t, const Vec3<Type>& v ) noexcept
 {
     return Vec3<Type>( t * v.X, t * v.Y, t * v.Z );
 }
