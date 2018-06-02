@@ -138,116 +138,18 @@ namespace Utils
         return ss.str();
     }
 
-    class BenchmarkGuard
-    {
-        friend inline BenchmarkGuard CreateBenchmarkGuard( const std::string& tag );
-
-    public:
-        inline BenchmarkGuard( const std::string& tag );
-        inline ~BenchmarkGuard();
-
-        BenchmarkGuard( const BenchmarkGuard& ) = delete;
-        BenchmarkGuard( BenchmarkGuard&& ) = default;
-
-    private:
-        const std::string m_Tag;
-    };
-
-    class Benchmark
-    {
-        friend inline void PushBenchmark( const std::string& tag );
-        friend inline void PopBenchmark( const std::string& tag );
-        friend inline void OutputBenchmarksToFile();
-
-    private:
-        inline void Start();
-        inline void End();
-
-        static inline std::unordered_map<std::string, Benchmark> g_Benchmarks;
-
-        std::chrono::time_point<std::chrono::high_resolution_clock> m_LastStart;
-        std::vector<U64> m_Milliseconds;
-    };
-
-    inline void Benchmark::Start()
-    {
-        m_LastStart = std::chrono::high_resolution_clock::now();
-    }
-
-    inline void Benchmark::End()
-    {
-        const auto duration = std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::high_resolution_clock::now() - m_LastStart );
-        m_Milliseconds.emplace_back( duration.count() );
-    }
-
-    inline BenchmarkGuard CreateBenchmarkGuard( const std::string& tag )
-    {
-        return BenchmarkGuard( tag );
-    }
-
-    inline void PushBenchmark( const std::string& tag )
-    {
-        Benchmark::g_Benchmarks[tag].Start();
-    }
-
-    inline void PopBenchmark( const std::string& tag )
-    {
-        Benchmark::g_Benchmarks[tag].End();
-    }
-
-    inline BenchmarkGuard::BenchmarkGuard( const std::string& tag ) 
-        : m_Tag( tag )
-    { 
-        PushBenchmark( m_Tag );
-    }
-
-    inline BenchmarkGuard::~BenchmarkGuard()
-    {
-        PopBenchmark( m_Tag );
-    }
-
-    inline void OutputBenchmarksToFile()
-    {
-        struct BenchmarkResult
-        {
-            std::string Tag;
-            F64 TotalSeconds;
-            F64 MSAverage;
-        };
-        std::vector<BenchmarkResult> results;
-
-        std::transform( Benchmark::g_Benchmarks.begin(), Benchmark::g_Benchmarks.end(), std::back_inserter(results), []( const auto& x )
-        {
-            const std::vector<U64>& milliseconds = x.second.m_Milliseconds;
-            const F64 totalMS = static_cast<F64>(std::accumulate( milliseconds.begin(), milliseconds.end(), 0ull ));
-            const F64 averageMS = totalMS / milliseconds.size();
-            return BenchmarkResult{ x.first, totalMS / 1000., averageMS };
-        } );
-
-        std::sort( results.begin(), results.end(), []( const BenchmarkResult& a,  const BenchmarkResult& b )
-        {
-            return a.TotalSeconds > b.TotalSeconds;
-        } );
-
-        if( !fs::exists( "benchmark" ) )
-            fs::create_directory( "benchmark" );
-
-        std::ofstream fileStream( "benchmark/benchmark_" + GetTimeOfDayIdentifier() + ".txt" );
-        Assert( fileStream.good() && fileStream.is_open() );
-
-        for( const BenchmarkResult& benchmark : results )
-            fileStream << benchmark.Tag << " => " << benchmark.TotalSeconds << "s (avg: " << benchmark.MSAverage << "ms)" << std::endl;
-
-        fileStream.close();
-    }
-
-    inline void OutputImageToFile( U32 width, U32 height, const std::vector<RGB>& data )
+    inline void OutputImageToFile( const std::string& fileName, U32 width, U32 height, const std::vector<RGB>& data )
     {
         if( !fs::exists( "output" ) )
             fs::create_directory( "output" );
 
-        std::string filePath = "output/output_" + GetTimeOfDayIdentifier() + ".png";
+        std::string filePath = "output/" + fileName + ".png";
         bool result = stbi_write_png( filePath.c_str(), width, height, 3, &data[0], 0 );
         Assert( result );
+    }
+
+    inline void OutputImageToIncrementalFile( U32 width, U32 height, const std::vector<RGB>& data )
+    {
+        Utils::OutputImageToFile( Utils::GetTimeOfDayIdentifier(), width, height, data );
     }
 }

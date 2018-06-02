@@ -14,14 +14,14 @@ public:
     template <class TMaterial> constexpr Sphere( const FVec3& center, F32 radius, TMaterial&& material );
     ~Sphere() override = default;
 
-    inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const override;
+    inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& hitRecord ) const override;
 
 private:
     constexpr bool Solve( F32 root, F32 tMin, F32 tMax, const Ray& ray, HitRecord& record ) const;
 
 public:
-    FVec3      Center;
-    F32        Radius;
+    FVec3 Center;
+    F32   Radius;
 };
 
 constexpr Sphere::Sphere()
@@ -51,7 +51,7 @@ constexpr bool Sphere::Solve( F32 root, F32 tMin, F32 tMax, const Ray& ray, HitR
     return false;
 }
 
-inline bool Sphere::Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record ) const
+inline bool Sphere::Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& hitRecord ) const
 {
     // Sphere equations:
     // x*x + y*y + z*z = R*R
@@ -69,7 +69,7 @@ inline bool Sphere::Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& record )
         const F32 root1 = ( -b - std::sqrt( discriminant ) ) / a;
         const F32 root2 = ( -b + std::sqrt( discriminant ) ) / a;
 
-        return( Solve( root1, tMin, tMax, ray, record ) || Solve( root2, tMin, tMax, ray, record ) );
+        return( Solve( root1, tMin, tMax, ray, hitRecord ) || Solve( root2, tMin, tMax, ray, hitRecord ) );
     }
     return false;
 }

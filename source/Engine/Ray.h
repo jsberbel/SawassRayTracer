@@ -10,8 +10,8 @@ public:
 
     constexpr Ray( const Ray& other ) noexcept;
     constexpr Ray( Ray&& other ) noexcept;
-    Ray& operator=( const Ray& other ) noexcept;
-    Ray& operator=( Ray&& other ) noexcept;
+    constexpr Ray& operator=( const Ray& other ) noexcept;
+    constexpr Ray& operator=( Ray&& other ) noexcept;
 
     constexpr FVec3 PointAt( F32 distance ) const noexcept;
 
@@ -44,7 +44,7 @@ constexpr Ray::Ray( Ray&& other ) noexcept
 {
 }
 
-Ray& Ray::operator=( const Ray& other ) noexcept
+constexpr Ray& Ray::operator=( const Ray& other ) noexcept
 {
     if( this != &other )
     {
@@ -54,7 +54,7 @@ Ray& Ray::operator=( const Ray& other ) noexcept
     return *this;
 }
 
-Ray& Ray::operator=( Ray&& other ) noexcept
+constexpr Ray& Ray::operator=( Ray&& other ) noexcept
 {
     if( this != &other )
     {

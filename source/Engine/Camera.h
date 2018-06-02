@@ -5,15 +5,13 @@
 class Camera
 {
 public:
-    constexpr Camera( const FVec3& lookFrom, const FVec3& lookAt, const F32& aspectRatio,
-                      const F32& vFOV, const F32& aperture, const F32& focusDistance );
+    inline Camera( const FVec3& lookFrom, const FVec3& lookAt, const F32& aspectRatio,
+                   const F32& vFOV, const F32& aperture, const F32& focusDistance );
 
-    inline Ray TraceRay( F32 s, F32 t );
+    constexpr Ray TraceRay( F32 s, F32 t );
 
 public:
     FVec3 Origin;
-    F32 HalfHeight;
-    F32 HalfWidth;
     FVec3 LowerLeftCorner;
     FVec3 Horizontal;
     FVec3 Vertical;
@@ -21,9 +19,9 @@ public:
     F32 LensRadius;
 };
 
-constexpr Camera::Camera( const FVec3& lookFrom, const FVec3& lookAt, const F32& aspectRatio,
+inline Camera::Camera( const FVec3& lookFrom, const FVec3& lookAt, const F32& aspectRatio,
                           const F32& vFOV, const F32& aperture, const F32& focusDistance ) // vertical FOV is top to bottom in degrees
-    : Origin( lookFrom )
+    /*: Origin( lookFrom )
     , LensRadius( aperture / 2.f )
     , W( ( lookFrom - lookAt ).Normalize() )
     , U( Math::Cross( FVec3( 0.f, 1.f, 0.f ), W ).Normalize() )
@@ -32,13 +30,13 @@ constexpr Camera::Camera( const FVec3& lookFrom, const FVec3& lookAt, const F32&
     , HalfWidth( aspectRatio * HalfHeight )
     , LowerLeftCorner( Origin - (HalfWidth  * focusDistance * U) - (HalfHeight * focusDistance * V) - (focusDistance * W) )
     , Horizontal( 2.f * HalfWidth * focusDistance * U )
-    , Vertical( 2.f * HalfHeight * focusDistance * V )
+    , Vertical( 2.f * HalfHeight * focusDistance * V )*/
 {
-    /*Origin     = lookFrom;
+    Origin     = lookFrom;
     LensRadius = aperture / 2.f;
 
     const F32 theta       = vFOV * ( Math::PI<F32> / 180.f );
-    const F32 halfHeight  = Math::tan( theta / 2.f );
+    const F32 halfHeight  = Math::Tan( theta / 2.f );
     const F32 halfWidth   = aspectRatio * halfHeight;
     const FVec3 up        = FVec3( 0.f, 1.f, 0.f );
 
@@ -52,13 +50,11 @@ constexpr Camera::Camera( const FVec3& lookFrom, const FVec3& lookAt, const F32&
 
     LowerLeftCorner = Origin - right - top - near;
     Horizontal      = 2.f * right;
-    Vertical        = 2.f * top;*/
+    Vertical        = 2.f * top;
 }
 
-inline Ray Camera::TraceRay( F32 s, F32 t )
+constexpr Ray Camera::TraceRay( F32 s, F32 t )
 {
-    Utils::CreateBenchmarkGuard( "TraceRay" );
-
     const FVec3 rd = LensRadius * Utils::RandomPointInUnitDisk();
     const FVec3 offset = ( U * rd.X ) + ( V * rd.Y );
     return Ray( Origin + offset, LowerLeftCorner + s*Horizontal + t*Vertical - Origin - offset );
