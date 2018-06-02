@@ -4,17 +4,17 @@ Modern C++ Ray Tracing on-going engine with a compile time favorable approach.
 
 ## Features
 
-* Geometry (Static & Dynamic)
+* Static & Dynamic Geometry
 * Antialiasing
-* Diffuse scattering
+* Diffuse Scattering
 * Reflections
 * Refractions
-* Advanced camera model
+* Advanced Camera Model
 * Defocus Blur
 * Motion Blur
-* Procedural scene generation
+* Procedural Scene Generation
 * Benchmarking
-* PNG image support
+* PNG Image Support
 
 ## References
 
