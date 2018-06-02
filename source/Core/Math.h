@@ -48,6 +48,18 @@ namespace Math
                  pow == 0 ? 1 : num * Pow( num, pow - 1 );
     }
 
+    template <typename Type>
+    constexpr Type ToRadians( Type degrees )
+    {
+        return( degrees * ( Math::PI<F32> / 180.f ) );
+    }
+
+    template <typename Type>
+    constexpr Type ToDegrees( Type radians )
+    {
+        return( radians * ( 180.f / Math::PI<F32> ) );
+    }
+
     template<typename T>
     using return_t = typename std::conditional<std::is_integral<T>::value, double, T>::type;
 

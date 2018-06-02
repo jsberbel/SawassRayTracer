@@ -8,12 +8,14 @@
 #include <Core/Math.h>
 #include <Core/Utils.h>
 
-class Lambertian : public IMaterial
+class Lambertian : public Material
 {
+    MOVABLE_ONLY( Lambertian );
+
 public:
     constexpr Lambertian( const FVec3& albedo ) noexcept;
 
-    inline bool Scatter( const Ray& inRay, const HitRecord& record, FVec3& attenuation, Ray& scattered ) const noexcept override;
+    inline bool Scatter( const Ray& ray, const HitRecord& hitRecord, FVec3* attenuation, Ray* scattered ) const noexcept override;
 
 public:
     FVec3 Albedo;
@@ -21,12 +23,12 @@ public:
 
 constexpr Lambertian::Lambertian( const FVec3& albedo ) noexcept : Albedo(albedo) {}
 
-inline bool Lambertian::Scatter(const Ray& inRay, const HitRecord& record, FVec3& attenuation, Ray& scattered) const noexcept
+inline bool Lambertian::Scatter(const Ray& ray, const HitRecord& hitRecord, FVec3* attenuation, Ray* scattered) const noexcept
 {
-    FVec3 target = record.Point + record.Normal + Utils::RandomPointInUnitSphere();
-    scattered = Ray( record.Point, target - record.Point );
-    attenuation = Albedo; // TODO(jserrano): add scattering probability
-    //FVec3 target = record.Point + record.Normal + Utils::RandomPointInUnitSphere();
-    //return 0.5f * GenerateColor( Ray( record.Point, target - record.Point ), world );
+    Assert( attenuation && scattered );
+
+    FVec3 target = hitRecord.Point + hitRecord.Normal + Utils::RandomPointInUnitSphere();
+    *scattered = Ray( hitRecord.Point, target - hitRecord.Point, ray.Time );
+    *attenuation = Albedo; // TODO(jserrano): add scattering probability
     return true;
 }

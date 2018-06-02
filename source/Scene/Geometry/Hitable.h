@@ -5,27 +5,46 @@
 #include "Core/Vec3.h"
 
 class Ray;
-class IMaterial;
+class Material;
 
 struct HitRecord
 {
+    MOVABLE_ONLY( HitRecord );
+
     F32 Distance;
     FVec3 Point;
     FVec3 Normal;
-    IMaterial* Material;
+    Material* Material;
+
+    HitRecord() = default;
 };
 
-class IHitable
+class Hitable
 {
-public:
-    virtual inline ~IHitable();
-    virtual inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord& hitRecord ) const = 0;
+    MOVABLE_ONLY( Hitable );
 
 public:
-    IMaterial* Material;
+    constexpr Hitable( Material* material );
+    virtual inline ~Hitable();
+
+    virtual inline bool Hit( const Ray& ray, F32 tMin, F32 tMax, HitRecord* hitRecord ) const = 0;
+    constexpr const Material* GetMaterial() const;
+
+public:
+    Material* m_Material;
 };
 
-inline IHitable::~IHitable()
+constexpr Hitable::Hitable( Material* material )
+    : m_Material( material )
 {
-    Utils::SafeDelete( Material );
+}
+
+inline Hitable::~Hitable()
+{
+    Utils::SafeDelete( m_Material );
+}
+
+constexpr const Material* Hitable::GetMaterial() const
+{
+    return m_Material;
 }

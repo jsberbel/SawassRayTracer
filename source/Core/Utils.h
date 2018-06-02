@@ -18,6 +18,20 @@
 #define IF(CONDITION, THEN, ELSE)   std::conditional<CONDITION, THEN, ELSE>::type
 #define ADD_ALL(Ts)                 Framework::Utils::AddAllTrait< sizeof(Ts)... >::value
 
+#define NON_COPYABLE( className ) \
+    public: \
+    constexpr className ( const className & other ) noexcept            = delete; \
+    constexpr className ( className && other ) noexcept                 = delete; \
+    constexpr className & operator=( const className & other ) noexcept = delete; \
+    constexpr className & operator=( className && other ) noexcept      = delete \
+
+#define MOVABLE_ONLY( className ) \
+    public: \
+    constexpr className ( const className & other ) noexcept            = delete; \
+    constexpr className ( className && other ) noexcept                 = default; \
+    constexpr className & operator=( const className & other ) noexcept = delete; \
+    constexpr className & operator=( className && other ) noexcept      = default \
+
 #include <random>
 #include <iostream>
 #include <tuple>

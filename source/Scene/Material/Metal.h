@@ -8,12 +8,14 @@
 #include <Core/Math.h>
 #include <Core/Utils.h>
 
-class Metal : public IMaterial
+class Metal : public Material
 {
+    MOVABLE_ONLY( Metal );
+
 public:
     constexpr Metal( const FVec3& albedo, F32 fuzziness ) noexcept;
 
-    inline bool Scatter( const Ray& inRay, const HitRecord& record, FVec3& attenuation, Ray& scattered ) const noexcept override;
+    inline bool Scatter( const Ray& ray, const HitRecord& hitRecord, FVec3* attenuation, Ray* scattered ) const noexcept override;
 
 public:
     FVec3 Albedo;
@@ -25,10 +27,12 @@ constexpr Metal::Metal( const FVec3& albedo, F32 fuzziness ) noexcept
     , Fuzziness( Math::Clamp( fuzziness, 0.f, 1.f ) )
 {}
 
-inline bool Metal::Scatter(const Ray& inRay, const HitRecord& record, FVec3& attenuation, Ray& scattered) const noexcept
+inline bool Metal::Scatter(const Ray& ray, const HitRecord& hitRecord, FVec3* attenuation, Ray* scattered) const noexcept
 {
-    FVec3 reflected = Reflect( inRay.Direction.Normalize(), record.Normal );
-    scattered = Ray( record.Point, reflected + Fuzziness * Utils::RandomPointInUnitSphere() );
-    attenuation = Albedo;
-    return( Math::Dot( scattered.Direction, record.Normal ) > 0.f );
+    Assert( attenuation && scattered );
+
+    FVec3 reflected = Reflect( ray.Direction.Normalize(), hitRecord.Normal );
+    *scattered = Ray( hitRecord.Point, reflected + Fuzziness * Utils::RandomPointInUnitSphere(), ray.Time );
+    *attenuation = Albedo;
+    return( Math::Dot( scattered->Direction, hitRecord.Normal ) > 0.f );
 }

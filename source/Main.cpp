@@ -14,11 +14,10 @@
 
 inline FVec3 GenerateColor( const Ray& ray, const World& world, S32 depth )
 {
-    if( HitRecord record; world.Hit( ray, 0.001f, Limits<F32>::Max(), record ) )
+    if( HitRecord hitRecord; world.Hit( ray, 0.001f, Limits<F32>::Max(), &hitRecord ) )
     {
-        Ray scattered;
-        FVec3 attenuation;
-        if( depth < 50 && record.Material->Scatter( ray, record, attenuation, scattered ) )
+        Ray scattered; FVec3 attenuation;
+        if( depth < 50 && hitRecord.Material->Scatter( ray, hitRecord, &attenuation, &scattered ) )
             return attenuation * GenerateColor( scattered, world, depth + 1 );
 
         return FVec3( 0.f );
@@ -35,57 +34,59 @@ inline FVec3 GammaCorrection( const FVec3& color )
     return FVec3( std::sqrt(color.X), std::sqrt(color.Y), std::sqrt(color.Z) );
 }
 
-inline World GenerateRandomSpheresWorld( U32 nbSpheres )
+inline World GenerateRandomSpheresWorld()
 {
     World world;
-    world.Add<Sphere>( FVec3( 0.f, -1000.f, 0.f ), 1000.f, Lambertian( FVec3( 0.5f ) ) );
+    world.Add<StaticSphere>( FVec3( 0.f, -1000.f, 0.f ), 1000.f, Lambertian( FVec3( 0.5f ) ) );
 
-    for( S32 a = -11; a < 11; ++a )
+    for( S32 a = -10; a < 10; ++a )
     {
-        for( S32 b = -11; b < 11; ++b )
+        for( S32 b = -10; b < 10; ++b )
         {
             F32 chooseMat = Utils::Random01();
             FVec3 center( a + 0.9f*Utils::Random01(), 0.2f, b + 0.9f*Utils::Random01() );
-            if( ( center - FVec3( 4.f, 0.2f, 0.f ) ).Length() > 0.9f )
+
+            if( ( center - FVec3(4.f, 0.2f, 0.f) ).Length() > 0.9f )
             {
                 if( chooseMat < 0.8f ) // Diffuse
                 {
                     auto RandomQuadraticUnit = []() constexpr { return Utils::Random01() * Utils::Random01(); };
-                    world.Add<Sphere>( center, 0.2f, Lambertian( FVec3( RandomQuadraticUnit(), RandomQuadraticUnit(), RandomQuadraticUnit() ) ) );
+                    world.Add<DynamicSphere>( center, center + FVec3( 0.f, 0.5f*Utils::Random01(), 0.f ), 0.f, 1.f, 0.2f,
+                                              Lambertian( FVec3( RandomQuadraticUnit(), RandomQuadraticUnit(), RandomQuadraticUnit() ) ) );
                 }
                 else if( chooseMat < 0.95f ) // Metal
                 {
                     auto RandomSemiUnit = []() constexpr { return 0.5f*( 1.f + Utils::Random01() ); };
-                    world.Add<Sphere>( center, 0.2f, Metal( FVec3( RandomSemiUnit(), RandomSemiUnit(), RandomSemiUnit() ), 0.5f*Utils::Random01() ) );
+                    world.Add<StaticSphere>( center, 0.2f, Metal( FVec3( RandomSemiUnit(), RandomSemiUnit(), RandomSemiUnit() ), 0.5f*Utils::Random01() ) );
                 }
                 else // Glass
                 {
-                    world.Add<Sphere>( center, 0.2f, Dielectric( 1.5f ) );
+                    world.Add<StaticSphere>( center, 0.2f, Dielectric( 1.5f ) );
                 }
             }
         }
     }
 
-    world.Add<Sphere>( FVec3(0.f, 1.f, 0.f),  1.f, Dielectric( 1.5f ) );
-    world.Add<Sphere>( FVec3(-4.f, 1.f, 0.f), 1.f, Lambertian( FVec3(0.4f, 0.2f, 0.1f) ) );
-    world.Add<Sphere>( FVec3(4.f, 1.f, 0.f),  1.f, Metal( FVec3(0.7f, 0.6f, 0.5f), 0.f ) );
+    world.Add<StaticSphere>( FVec3(0.f, 1.f, 0.f),  1.f, Dielectric( 1.5f ) );
+    world.Add<StaticSphere>( FVec3(-4.f, 1.f, 0.f), 1.f, Lambertian( FVec3(0.4f, 0.2f, 0.1f) ) );
+    world.Add<StaticSphere>( FVec3(4.f, 1.f, 0.f),  1.f, Metal( FVec3(0.7f, 0.6f, 0.5f), 0.f ) );
 
     return world;
 }
 
 int main()
 {
-    BENCHMARK_BATCH_START( 20 );
+    BENCHMARK_BATCH_START( 1 );
 
-    constexpr U32 width  = 200;
-    constexpr U32 height = 100;
+    constexpr U32 width  = 800;
+    constexpr U32 height = 600;
     constexpr F32 resolution = width*height;
-    constexpr U32 numSamples = 10;
+    constexpr U32 numSamples = 30;
 
     std::vector<RGB> data;
     data.reserve( width * height );
 
-    World world = GenerateRandomSpheresWorld( 100 );
+    World world = GenerateRandomSpheresWorld();
 
     /*world.Add<Sphere>( FVec3( 0.f, 0.f, -1.f ),       0.5f,    Lambertian( FVec3( 0.8f, 0.3f, 0.3f ) ) );
     world.Add<Sphere>( FVec3( 0.f, -100.5f, -1.f ),   100.f,   Lambertian( FVec3( 0.8f, 0.8f, 0.f ) ) );
@@ -99,16 +100,20 @@ int main()
 
     constexpr FVec3 lookFrom( 13.f, 2.f, 3.f );
     constexpr FVec3 lookAt( 0.f );
-    constexpr F32 aperture = 0.1f;
-    constexpr F32 distToFocus = 10.f; //( lookFrom - lookAt ).Length();
-    Camera camera( lookFrom, lookAt, F32(width) / F32(height), 20, aperture, distToFocus );
+    constexpr F32 verticalFOV = 20.f;
+    constexpr F32 aperture    = 0.f;
+    constexpr F32 startTime   = 0.f;
+    constexpr F32 endTime     = 1.f;
+    Camera camera( lookFrom, lookAt, width, height, verticalFOV, aperture, startTime, endTime );
 
-    for ( S32 j = height - 1; j >= 0; --j )
+    //world.SortByDistance( camera );
+
+    for( S32 j = height - 1; j >= 0; --j )
     {
-        for ( S32 i = 0; i < width; ++i )
+        for( S32 i = 0; i < width; ++i )
         {
             FVec3 color( 0.f );
-            for ( S32 s = 0; s < numSamples; ++s )
+            for( S32 s = 0; s < numSamples; ++s )
             {
                 const F32 u       = static_cast<F32>( i + Utils::Random01() ) / static_cast<F32>( width );
                 const F32 v       = static_cast<F32>( j + Utils::Random01() ) / static_cast<F32>( height );
@@ -123,7 +128,8 @@ int main()
             data.push_back(rgb);
         }
 
-        //const F32 percentage = ( F32( height - j ) / height ) * 100.f;
+        const F32 percentage = ( static_cast<F32>( height - j ) / height ) * 100.f;
+        Utils::ConsoleOutput( "%.2f%% completed", percentage );
     }
 
     //Utils::OutputImageToIncrementalFile( width, height, data );
