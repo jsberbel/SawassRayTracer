@@ -1,6 +1,6 @@
 # Sawass Ray Tracer
 
-Modern C++ Ray Tracing on-going engine with a compile time favorable approach.
+Modern C++ Ray Tracing (on-going) engine.
 
 ## Features
 

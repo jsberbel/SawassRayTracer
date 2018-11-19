@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="core">
+      <UniqueIdentifier>{ac1efc56-31c5-4b62-9597-66b3d7637c29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine">
+      <UniqueIdentifier>{eb7f9376-c20c-4542-9a56-f4408d463d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\geometry">
+      <UniqueIdentifier>{b0c2fbe5-96c5-42e8-abb3-5dd5c83d227b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scenes">
+      <UniqueIdentifier>{94bdf5e9-4df1-49c3-b67d-f6993fae0179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\math">
+      <UniqueIdentifier>{8f2980ef-2861-46f6-8f14-9f21b453fd39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="engine\material">
+      <UniqueIdentifier>{c6381582-6096-4c39-a8d6-3c46945898ce}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\core\assert.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\profiler.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\traits.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\types.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\utils.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\math\aabb.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\math\math.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\math\v2.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\math\v4.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\camera.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\ray.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\world.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\geometry\sphere.h">
+      <Filter>engine\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\material\dielectric.h">
+      <Filter>engine\material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\material\lambertian.h">
+      <Filter>engine\material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\material\material.h">
+      <Filter>engine\material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\material\metal.h">
+      <Filter>engine\material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\geometry\hit.h">
+      <Filter>engine\geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\math\v3.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
