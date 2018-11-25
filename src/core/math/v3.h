@@ -10,61 +10,63 @@
 #include "core/math/v2.h"
 
 template <class T>
-union look_from
+union v3
 {
-public:
-    constexpr look_from() noexcept                                       : x(0), y(0), z(0) {}
-    explicit constexpr look_from(T _s) noexcept                          : x(_s), y(_s), z(_s) {}
-    explicit constexpr look_from(T _x, T _y, T _z) noexcept              : x(_x), y(_y), z(_z) {}
-    explicit constexpr look_from(const v2<T>& _xy, T _z = T(0)) noexcept : xy(_xy), z(_z) {}
+    static_assert(std::is_trivially_destructible<T>::value);
 
-    template <typename TT>
-    constexpr look_from<TT> cast() const { return look_from<TT>(TT(x), TT(y), TT(z)); }
+public:
+    constexpr v3() noexcept                                       : x(0), y(0), z(0) {}
+    explicit constexpr v3(T _s) noexcept                          : x(_s), y(_s), z(_s) {}
+    explicit constexpr v3(T _x, T _y, T _z) noexcept              : x(_x), y(_y), z(_z) {}
+    explicit constexpr v3(const v2<T>& _xy, T _z = T(0)) noexcept : xy(_xy), z(_z) {}
+
+    template <typename S>
+    constexpr v3<S> cast() const { return v3<S>(S(x), S(y), S(z)); }
     
     constexpr T operator[](size_t _i) const noexcept { sws_assert(_i < 3); return (&x)[_i]; }
     constexpr T& operator[](size_t _i) noexcept      { sws_assert(_i < 3); return (&x)[_i]; }
 
-    constexpr const look_from& operator+() const noexcept;
-    constexpr look_from operator-() const noexcept;
+    constexpr const v3& operator+() const noexcept;
+    constexpr v3 operator-() const noexcept;
 
-    constexpr look_from& operator+=(const look_from& _v) noexcept;
-    constexpr look_from& operator+=(T _s) noexcept;
-    constexpr look_from operator+(const look_from& _v) const noexcept;
+    constexpr v3& operator+=(const v3& _v) noexcept;
+    constexpr v3& operator+=(T _s) noexcept;
+    constexpr v3 operator+(const v3& _v) const noexcept;
 
-    constexpr look_from& operator-=(const look_from& _v) noexcept;
-    constexpr look_from& operator-=(T _s) noexcept;
-    constexpr look_from operator-(const look_from& _v) const noexcept;
+    constexpr v3& operator-=(const v3& _v) noexcept;
+    constexpr v3& operator-=(T _s) noexcept;
+    constexpr v3 operator-(const v3& _v) const noexcept;
 
-    constexpr look_from& operator*=(const look_from& _v) noexcept;
-    constexpr look_from& operator*=(T _s) noexcept;
-    constexpr look_from operator*(const look_from& _v) const noexcept;
-    constexpr look_from operator*(T _s) const noexcept;
+    constexpr v3& operator*=(const v3& _v) noexcept;
+    constexpr v3& operator*=(T _s) noexcept;
+    constexpr v3 operator*(const v3& _v) const noexcept;
+    constexpr v3 operator*(T _s) const noexcept;
 
-    constexpr look_from& operator/=(const look_from& _v) noexcept;
-    constexpr look_from& operator/=(T _s) noexcept;
-    constexpr look_from operator/(const look_from& _v) const noexcept;
-    constexpr look_from operator/(T _s) const noexcept;
+    constexpr v3& operator/=(const v3& _v) noexcept;
+    constexpr v3& operator/=(T _s) noexcept;
+    constexpr v3 operator/(const v3& _v) const noexcept;
+    constexpr v3 operator/(T _s) const noexcept;
 
-    constexpr b32 operator==(const look_from& _v) const;
-    constexpr b32 operator!=(const look_from& _v) const;
-    constexpr b32 operator<(const look_from& _v) const;
-    constexpr b32 operator<=(const look_from& _v) const;
-    constexpr b32 operator>(const look_from& _v) const;
-    constexpr b32 operator>=(const look_from& _v) const;
+    constexpr b32 operator==(const v3& _v) const;
+    constexpr b32 operator!=(const v3& _v) const;
+    constexpr b32 operator<(const v3& _v) const;
+    constexpr b32 operator<=(const v3& _v) const;
+    constexpr b32 operator>(const v3& _v) const;
+    constexpr b32 operator>=(const v3& _v) const;
 
-    friend constexpr std::istream& operator>>(std::istream& _is, look_from& _v) noexcept;
-    friend inline std::ostream& operator<<(std::ostream& _os, const look_from& _v) noexcept;
+    friend constexpr std::istream& operator>>(std::istream& _is, v3& _v) noexcept;
+    friend inline std::ostream& operator<<(std::ostream& _os, const v3& _v) noexcept;
 
-    static constexpr look_from x_axis()   { return look_from(T(1), T(0), T(0)); }
-    static constexpr look_from y_axis()   { return look_from(T(0), T(1), T(0)); }
-    static constexpr look_from z_axis()   { return look_from(T(0), T(0), T(1)); }
-    static constexpr look_from right()    { return look_from(T(1), T(0), T(0)); }
-    static constexpr look_from up()       { return look_from(T(0), T(1), T(0)); }
-    static constexpr look_from depth()    { return look_from(T(0), T(0), T(1)); }
-    static constexpr look_from zero()     { return look_from(T(0)); }
-    static constexpr look_from one()      { return look_from(T(1)); }
-    static constexpr look_from infinity() { return look_from(std::numeric_limits<T>::infinity()); }
-    static constexpr look_from nan()      { return look_from(std::numeric_limits<T>::quiet_NaN()); }
+    static constexpr v3 x_axis()   { return v3(T(1), T(0), T(0)); }
+    static constexpr v3 y_axis()   { return v3(T(0), T(1), T(0)); }
+    static constexpr v3 z_axis()   { return v3(T(0), T(0), T(1)); }
+    static constexpr v3 right()    { return v3(T(1), T(0), T(0)); }
+    static constexpr v3 up()       { return v3(T(0), T(1), T(0)); }
+    static constexpr v3 depth()    { return v3(T(0), T(0), T(1)); }
+    static constexpr v3 zero()     { return v3(T(0)); }
+    static constexpr v3 one()      { return v3(T(1)); }
+    static constexpr v3 infinity() { return v3(std::numeric_limits<T>::infinity()); }
+    static constexpr v3 nan()      { return v3(std::numeric_limits<T>::quiet_NaN()); }
 
     constexpr b32 is_nan() const noexcept;
     constexpr b32 is_finite() const noexcept;
@@ -72,13 +74,13 @@ public:
 
     constexpr T get_sqrlength() const noexcept;
     constexpr T get_length() const noexcept;
-    constexpr look_from get_normalized() const noexcept;
-    constexpr look_from get_abs() const noexcept;
-    constexpr look_from get_orthogonal() const noexcept;
-    constexpr look_from get_inverse() const noexcept;
-    constexpr look_from get_floor() const noexcept;
-    constexpr look_from get_ceil() const noexcept;
-    constexpr T get_shortest_angle(const look_from& _axis = right()) const noexcept;
+    constexpr v3 get_normalized() const noexcept;
+    constexpr v3 get_abs() const noexcept;
+    constexpr v3 get_orthogonal() const noexcept;
+    constexpr v3 get_inverse() const noexcept;
+    constexpr v3 get_floor() const noexcept;
+    constexpr v3 get_ceil() const noexcept;
+    constexpr T get_shortest_angle(const v3& _axis = right()) const noexcept;
 
     inline void set_length(T _len) noexcept;
     inline void normalize() noexcept;
@@ -92,34 +94,35 @@ public:
     struct { T r, g, b; };
 
 private:
-    struct { v2<T> xy; T _0; };
-    struct { T _1; v2<T> yz; };
+    //struct { v2<T> xy; T _0; };
+    //struct { T _1; v2<T> yz; };
+    u8 m_memory[sizeof(T)*3u];
 };
 
 namespace math
 {
     template <class T>
-    constexpr T sqrdist(const look_from<T>& _a, const look_from<T>& _b) noexcept
+    constexpr T sqrdist(const v3<T>& _a, const v3<T>& _b) noexcept
     {
         return (_b - _a).get_sqrlength();
     }
 
     template <class T>
-    constexpr T dist(const look_from<T>& _a, const look_from<T>& _b) noexcept
+    constexpr T dist(const v3<T>& _a, const v3<T>& _b) noexcept
     {
         return (_b - _a).get_length();
     }
 
     template <class T>
-    constexpr T dot(const look_from<T>& _a, const look_from<T>& _b) noexcept
+    constexpr T dot(const v3<T>& _a, const v3<T>& _b) noexcept
     {
         return _a.x*_b.x + _a.y*_b.y + _a.z*_b.z;
     }
     
     template <class T>
-    constexpr look_from<T> cross(const look_from<T>& _a, const look_from<T>& _b) noexcept
+    constexpr v3<T> cross(const v3<T>& _a, const v3<T>& _b) noexcept
     {
-        return look_from<T>(
+        return v3<T>(
                       _a.y*_b.z - _a.z*_b.y,
                       _a.z*_b.x - _a.x*_b.z,
                       _a.x*_b.y - _a.y*_b.x
@@ -128,19 +131,19 @@ namespace math
 }
 
 template <class T>
-constexpr const look_from<T>& look_from<T>::operator+() const noexcept
+constexpr const v3<T>& v3<T>::operator+() const noexcept
 {
     return *this;
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::operator-() const noexcept
+constexpr v3<T> v3<T>::operator-() const noexcept
 {
-    return look_from<T>(-x, -y, -z);
+    return v3<T>(-x, -y, -z);
 }
 
 template <class T>
-constexpr look_from<T>& look_from<T>::operator+=(const look_from<T>& _v) noexcept
+constexpr v3<T>& v3<T>::operator+=(const v3<T>& _v) noexcept
 {
     x += _v.x;
     y += _v.y;
@@ -149,7 +152,7 @@ constexpr look_from<T>& look_from<T>::operator+=(const look_from<T>& _v) noexcep
 }
 
 template <class T>
-constexpr look_from<T>& look_from<T>::operator+=(T _s) noexcept
+constexpr v3<T>& v3<T>::operator+=(T _s) noexcept
 {
     x += _s;
     y += _s;
@@ -158,13 +161,13 @@ constexpr look_from<T>& look_from<T>::operator+=(T _s) noexcept
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::operator+(const look_from<T>& _v) const noexcept
+constexpr v3<T> v3<T>::operator+(const v3<T>& _v) const noexcept
 {
-    return look_from<T>(x + _v.x, y + _v.y, z + _v.z);
+    return v3<T>(x + _v.x, y + _v.y, z + _v.z);
 }
 
 template <class T>
-constexpr look_from<T>& look_from<T>::operator-=(const look_from<T>& _v) noexcept
+constexpr v3<T>& v3<T>::operator-=(const v3<T>& _v) noexcept
 {
     x -= _v.x;
     y -= _v.y;
@@ -173,7 +176,7 @@ constexpr look_from<T>& look_from<T>::operator-=(const look_from<T>& _v) noexcep
 }
 
 template <class T>
-constexpr look_from<T>& look_from<T>::operator-=(T _s) noexcept
+constexpr v3<T>& v3<T>::operator-=(T _s) noexcept
 {
     x -= _s;
     y -= _s;
@@ -182,13 +185,13 @@ constexpr look_from<T>& look_from<T>::operator-=(T _s) noexcept
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::operator-(const look_from<T>& _v) const noexcept
+constexpr v3<T> v3<T>::operator-(const v3<T>& _v) const noexcept
 {
-    return look_from<T>(x - _v.x, y - _v.y, z - _v.z);
+    return v3<T>(x - _v.x, y - _v.y, z - _v.z);
 }
 
 template <class T>
-constexpr look_from<T>& look_from<T>::operator*=(const look_from<T>& _v) noexcept
+constexpr v3<T>& v3<T>::operator*=(const v3<T>& _v) noexcept
 {
     x *= _v.x;
     y *= _v.y;
@@ -197,7 +200,7 @@ constexpr look_from<T>& look_from<T>::operator*=(const look_from<T>& _v) noexcep
 }
 
 template <class T>
-constexpr look_from<T>& look_from<T>::operator*=(T _s) noexcept
+constexpr v3<T>& v3<T>::operator*=(T _s) noexcept
 {
     x *= _s;
     y *= _s;
@@ -206,19 +209,19 @@ constexpr look_from<T>& look_from<T>::operator*=(T _s) noexcept
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::operator*(const look_from<T>& _v) const noexcept
+constexpr v3<T> v3<T>::operator*(const v3<T>& _v) const noexcept
 {
-    return look_from<T>(x * _v.x, y * _v.y, z * _v.z);
+    return v3<T>(x * _v.x, y * _v.y, z * _v.z);
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::operator*(T _s) const noexcept
+constexpr v3<T> v3<T>::operator*(T _s) const noexcept
 {
-    return look_from<T>(x * _s, y * _s, z * _s);
+    return v3<T>(x * _s, y * _s, z * _s);
 }
 
 template <class T>
-constexpr look_from<T>& look_from<T>::operator/=(const look_from<T>& _v) noexcept
+constexpr v3<T>& v3<T>::operator/=(const v3<T>& _v) noexcept
 {
     x /= _v.x;
     y /= _v.y;
@@ -227,7 +230,7 @@ constexpr look_from<T>& look_from<T>::operator/=(const look_from<T>& _v) noexcep
 }
 
 template <class T>
-constexpr look_from<T>& look_from<T>::operator/=(const T _s) noexcept
+constexpr v3<T>& v3<T>::operator/=(const T _s) noexcept
 {
     const f32 inv_s = math::inv(_s);
     x *= inv_s;
@@ -237,113 +240,113 @@ constexpr look_from<T>& look_from<T>::operator/=(const T _s) noexcept
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::operator/(const look_from<T>& _v) const noexcept
+constexpr v3<T> v3<T>::operator/(const v3<T>& _v) const noexcept
 {
-    return look_from<T>(x / _v.x, y / _v.y, z / _v.z);
+    return v3<T>(x / _v.x, y / _v.y, z / _v.z);
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::operator/(T _s) const noexcept
+constexpr v3<T> v3<T>::operator/(T _s) const noexcept
 {
-    return look_from<T>(x / _s, y / _s, z / _s);
+    return v3<T>(x / _s, y / _s, z / _s);
 }
 
 template <class T>
-constexpr b32 look_from<T>::operator==(const look_from& _v) const
+constexpr b32 v3<T>::operator==(const v3& _v) const
 {
     return x == _v.x && y == _v.y && z == _v.z;
 }
 
 template <class T>
-constexpr b32 look_from<T>::operator!=(const look_from& _v) const
+constexpr b32 v3<T>::operator!=(const v3& _v) const
 {
     return x != _v.x || y != _v.y || z != _v.z;
 }
 
 template <class T>
-constexpr b32 look_from<T>::operator<(const look_from& _v) const
+constexpr b32 v3<T>::operator<(const v3& _v) const
 {
     return x < _v.x && y < _v.y && z < _v.z;
 }
 
 template <class T>
-constexpr b32 look_from<T>::operator<=(const look_from& _v) const
+constexpr b32 v3<T>::operator<=(const v3& _v) const
 {
     return x <= _v.x && y <= _v.y && z <= _v.z;
 }
 
 template <class T>
-constexpr b32 look_from<T>::operator>(const look_from& _v) const
+constexpr b32 v3<T>::operator>(const v3& _v) const
 {
     return x > _v.x && y > _v.y && z > _v.z;
 }
 
 template <class T>
-constexpr b32 look_from<T>::operator>=(const look_from& _v) const
+constexpr b32 v3<T>::operator>=(const v3& _v) const
 {
     return x >= _v.x && y >= _v.y && z >= _v.z;
 }
 
 template <class T>
-constexpr std::istream& operator>>(std::istream& _is, look_from<T>& _v) noexcept
+constexpr std::istream& operator>>(std::istream& _is, v3<T>& _v) noexcept
 {
     _is >> _v.x >> _v.y >> _v.z;
     return _is;
 }
 
 template <class T>
-inline std::ostream& operator<<(std::ostream& _os, const look_from<T>& _v) noexcept
+inline std::ostream& operator<<(std::ostream& _os, const v3<T>& _v) noexcept
 {
     _os << _v.x << ' ' << _v.y << ' ' << _v.z;
     return _os;
 }
 
 template <class T>
-constexpr b32 look_from<T>::is_nan() const noexcept
+constexpr b32 v3<T>::is_nan() const noexcept
 {
     return math::is_nan(x) || math::is_nan(y) || math::is_nan(z);
 }
 
 template <class T>
-constexpr b32 look_from<T>::is_finite() const noexcept
+constexpr b32 v3<T>::is_finite() const noexcept
 {
     return math::is_finite(x) && math::is_finite(y) && math::is_finite(z);
 }
 
 template <class T>
-constexpr b32 look_from<T>::is_normalized() const noexcept
+constexpr b32 v3<T>::is_normalized() const noexcept
 {
     const f32 sqrlength = get_sqrlength();
     return math::is_almost_null(sqrlength);
 }
 
 template <class T>
-constexpr T look_from<T>::get_sqrlength() const noexcept
+constexpr T v3<T>::get_sqrlength() const noexcept
 {
     return x*x + y*y + z*z;
 }
 
 template <class T>
-constexpr T look_from<T>::get_length() const noexcept
+constexpr T v3<T>::get_length() const noexcept
 {
     return math::sqrt(get_sqrlength());
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::get_normalized() const noexcept
+constexpr v3<T> v3<T>::get_normalized() const noexcept
 {
     const T inv_len = math::inv(get_length());
-    return look_from<T>(x * inv_len, y * inv_len, z * inv_len);
+    return v3<T>(x * inv_len, y * inv_len, z * inv_len);
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::get_abs() const noexcept
+constexpr v3<T> v3<T>::get_abs() const noexcept
 {
-    return look_from<T>(math::abs(x), math::abs(y), math::abs(z));
+    return v3<T>(math::abs(x), math::abs(y), math::abs(z));
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::get_orthogonal() const noexcept
+constexpr v3<T> v3<T>::get_orthogonal() const noexcept
 {
     const T len = get_length();
     if (is_almost_equal(z, T(0)))
@@ -352,31 +355,31 @@ constexpr look_from<T> look_from<T>::get_orthogonal() const noexcept
     const T out_x = y;
     const T out_y = z;
     const T out_z = -(x * out_x + y * out_y) / z;
-    look_from<T> out(out_x, out_y, out_z);
+    v3<T> out(out_x, out_y, out_z);
     out.set_length(len);
     return out;
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::get_inverse() const noexcept
+constexpr v3<T> v3<T>::get_inverse() const noexcept
 {
-    return look_from<T>(math::inv(x), math::inv(y), math::inv(z));
+    return v3<T>(math::inv(x), math::inv(y), math::inv(z));
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::get_floor() const noexcept
+constexpr v3<T> v3<T>::get_floor() const noexcept
 {
-    return look_from<T>(math::floor(x), math::floor(y), math::floor(z));
+    return v3<T>(math::floor(x), math::floor(y), math::floor(z));
 }
 
 template <class T>
-constexpr look_from<T> look_from<T>::get_ceil() const noexcept
+constexpr v3<T> v3<T>::get_ceil() const noexcept
 {
-    return look_from<T>(math::ceil(x), math::ceil(y), math::ceil(z));
+    return v3<T>(math::ceil(x), math::ceil(y), math::ceil(z));
 }
 
 template <class T>
-constexpr T look_from<T>::get_shortest_angle(const look_from<T>& _axis) const noexcept
+constexpr T v3<T>::get_shortest_angle(const v3<T>& _axis) const noexcept
 {
     const T angle = math::acos(math::dot(_axis.get_normalized(), this->get_normalized()));
     sws_assert(angle >= T(0));
@@ -385,14 +388,14 @@ constexpr T look_from<T>::get_shortest_angle(const look_from<T>& _axis) const no
 }
 
 template <class T>
-inline void look_from<T>::set_length(T _len) noexcept
+inline void v3<T>::set_length(T _len) noexcept
 {
     normalize();
     *this *= _len;
 }
 
 template <class T>
-inline void look_from<T>::normalize() noexcept
+inline void v3<T>::normalize() noexcept
 {
     const T len = get_length();
     if (len > std::numeric_limits<T>::epsilon())
@@ -402,19 +405,25 @@ inline void look_from<T>::normalize() noexcept
 }
 
 template <class T>
-inline void look_from<T>::clear() noexcept
+inline void v3<T>::clear() noexcept
 {
     x = y = z = T(0);
 }
 
 template <class T>
-inline look_from<T> operator*(T _s, const look_from<T>& _v)
+inline v3<T> operator*(T _s, const v3<T>& _v)
 {
     return _v.operator*(_s);
 }
 
-using fv3 = look_from<f32>;
-using dv3 = look_from<f64>;
-using uv3 = look_from<u32>;
-using sv3 = look_from<s32>;
-using rgb = look_from<u8>;
+using fv3 = v3<f32>;
+using dv3 = v3<f64>;
+using uv3 = v3<u32>;
+using sv3 = v3<s32>;
+using rgb = v3<u8>;
+
+static_assert(sizeof(fv3) == sizeof(f32) * 3u);
+static_assert(sizeof(dv3) == sizeof(f64) * 3u);
+static_assert(sizeof(uv3) == sizeof(u32) * 3u);
+static_assert(sizeof(sv3) == sizeof(s32) * 3u);
+static_assert(sizeof(rgb) == sizeof(u8) * 3u);

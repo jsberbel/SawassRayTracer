@@ -14,45 +14,26 @@
 
 #include <algorithm>
 
-class aabb
+class AABB
 {
-MOVABLE_ONLY( aabb );
+    //MOVABLE_ONLY( AABB );
 
 public:
-    constexpr aabb();
-    constexpr aabb(const fv3& _min, const fv3& _max);
-    constexpr aabb(fv3&& _min, fv3&& _max);
+    constexpr AABB() = default;
+    constexpr AABB(const fv3& _min, const fv3& _max) : min(_min), max(_max) {}
 
-    constexpr b32 hit(const Ray& _ray, f32 _tmin, f32 _tmax) const;
+    constexpr b32 is_hit(const Ray& _ray, f32 _tmin, f32 _tmax) const;
 
-    static constexpr aabb get_surrounding_box(const aabb& _boxA, const aabb& _boxB);
+    static constexpr AABB get_surrounding_box(const AABB& _boxA, const AABB& _boxB);
 
 public:
-    fv3 min;
-    fv3 max;
+    fv3 min = {};
+    fv3 max = {};
 };
 
-constexpr aabb::aabb()
-    : min(0.f)
-    , max(0.f)
+constexpr b32 AABB::is_hit(const Ray& _ray, f32 _tmin, f32 _tmax) const
 {
-}
-
-constexpr aabb::aabb(const fv3& min, const fv3& max)
-    : min(min)
-    , max(max)
-{
-}
-
-constexpr aabb::aabb(fv3&& min, fv3&& max)
-    : min(std::move(min))
-    , max(std::move(min))
-{
-}
-
-constexpr b32 aabb::hit(const Ray& _ray, f32 _tmin, f32 _tmax) const
-{
-    for (mem_idx i = 0; i < 3; ++i)
+    for (mem_idx i = 0u; i < 3u; ++i)
     {
         const f32 inv_dir = math::inv(_ray.direction[i]);
         f32 t0 = (min[i] - _ray.origin[i]) * inv_dir;
@@ -70,15 +51,15 @@ constexpr b32 aabb::hit(const Ray& _ray, f32 _tmin, f32 _tmax) const
     return true;
 }
 
-constexpr aabb aabb::get_surrounding_box(const aabb& _boxA, const aabb& _boxB)
+constexpr AABB AABB::get_surrounding_box(const AABB& _boxA, const AABB& _boxB)
 {
-    const fv3 small(math::min(_boxA.min.x, _boxB.min.x),
-                    math::min(_boxA.min.y, _boxB.min.y),
-                    math::min(_boxA.min.z, _boxB.min.z));
+    const fv3 sml(math::min(_boxA.min.x, _boxB.min.x),
+                  math::min(_boxA.min.y, _boxB.min.y),
+                  math::min(_boxA.min.z, _boxB.min.z));
 
     const fv3 big(math::max(_boxA.max.x, _boxB.max.x),
                   math::max(_boxA.max.y, _boxB.max.y),
                   math::max(_boxA.max.z, _boxB.max.z));
 
-    return aabb(small, big);
+    return AABB(sml, big);
 }

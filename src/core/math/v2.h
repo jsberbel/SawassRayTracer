@@ -8,7 +8,6 @@
 #pragma once
 
 #include "core/types.h"
-#include "core/assert.h"
 #include "core/math/math.h"
 
 #include <iostream>
@@ -89,6 +88,9 @@ public:
 public:
     struct { T x, y; };
     struct { T u, v; };
+
+private:
+    u8 m_memory[sizeof(T)*2u];
 };
 
 namespace math

@@ -9,7 +9,7 @@
 
 #include "core/utils.h"
 
-#include "engine/geometry/hit.h"
+#include "engine/geometry/entity.h"
 #include "engine/camera.h"
 
 #include <vector>
@@ -23,13 +23,13 @@ public:
     inline World(u32 _entity_count);
     inline ~World();
 
-    template <class TEntity, class... TArgs, ENABLE_IF(IS_BASE_OF(IHitable, TEntity))>
-    constexpr void add(TArgs&&... _args);
+    template <class T, class... TArgs, ENABLE_IF(IS_BASE_OF(T, Entity))>
+    constexpr T* add(TArgs&&... _args);
 
-    inline bool hit(const Ray& _ray, f32 _tmin, f32 _tmax, Hit* _hit) const;
+    inline b32 hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const;
 
 private:
-    std::vector<IHitable*> m_entities;
+    std::vector<Entity*> m_entities;
 };
 
 constexpr World::World() = default;
@@ -42,31 +42,31 @@ inline World::World(u32 _entity_count)
 inline World::~World()
 {
     for (auto& entity : m_entities)
-        utils::safe_del(entity);
-
+        util::safe_del(entity);
+    
     m_entities.clear();
 }
 
-template <class TEntity, class... TArgs, class>
-constexpr void World::add(TArgs&&... _args)
+template <class T, class... TArgs, class>
+constexpr T* World::add(TArgs&&... _args)
 {
-    m_entities.emplace_back(new TEntity(std::forward<TArgs>(_args)...));
+    return static_cast<T*>(m_entities.emplace_back(new T(std::forward<TArgs>(_args)...)));
 }
 
-inline bool World::hit(const Ray& _ray, f32 _tmin, f32 _tmax, Hit* _hit) const
+inline b32 World::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const
 {
     Hit last_hit;
-    bool has_hit_anything = false;
-    f32 closest_dist = _tmax;
+    b32 has_hit_anything = false;
+    f32 closest_dist = _zmax;
 
     for (const auto& entity : m_entities)
     {
-        if (entity->hit(_ray, _tmin, closest_dist, &last_hit))
+        if (entity->hit(_ray, _time, _zmin, closest_dist, &last_hit))
         {
             has_hit_anything = true;
             closest_dist = last_hit.distance;
             last_hit.material = entity->material;
-            *_hit = std::move(last_hit);
+            *hit_ = std::move(last_hit);
         }
     }
 

@@ -8,7 +8,7 @@
 #pragma once
 
 #include <engine/material/material.h>
-#include <engine/geometry/hit.h>
+#include <engine/geometry/entity.h>
 #include <engine/ray.h>
 
 #include <core/math/math.h>
@@ -19,7 +19,7 @@ class Dielectric : public Material
 MOVABLE_ONLY( Dielectric );
 
 public:
-    constexpr Dielectric(f32 refractiveIndex) noexcept;
+    constexpr Dielectric(f32 _refractive_idx) noexcept;
 
     inline b32 scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, Ray* _scattered) const noexcept override;
 
@@ -63,8 +63,8 @@ inline b32 Dielectric::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuati
     const bool is_refracted = refract(_ray.direction, outward_normal, refractive_ratio, &refracted);
     const f32 reflection_probability = (is_refracted) ? schlick(cosine, refractive_idx) : 1.f;
 
-    const bool is_reflected = utils::rnd_01() < reflection_probability;
-    *_scattered = Ray(_hit.point, (is_reflected) ? reflected : refracted, _ray.time);
+    const bool is_reflected = util::rnd_01() < reflection_probability;
+    *_scattered = Ray(_hit.point, (is_reflected) ? reflected : refracted);
 
     return true;
 }

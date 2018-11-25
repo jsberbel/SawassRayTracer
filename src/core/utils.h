@@ -3,13 +3,8 @@
 #include "core/math/v3.h"
 
 #include <random>
-#include <iostream>
-#include <tuple>
 #include <sstream>
 #include <chrono>
-#include <fstream>
-#include <unordered_map>
-#include <numeric>
 #include <iomanip>
 #include <cstdarg>
 #include <cstdio>
@@ -20,21 +15,21 @@ namespace fs = std::filesystem;
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-#define NON_COPYABLE( classname ) \
+#define NON_COPYABLE( CLS ) \
     public: \
-    constexpr classname (const classname & other) noexcept            = delete; \
-    constexpr classname (classname && other) noexcept                 = delete; \
-    constexpr classname & operator=(const classname & other) noexcept = delete; \
-    constexpr classname & operator=(classname && other) noexcept      = delete \
+    constexpr CLS (const CLS &) noexcept            = delete; \
+    constexpr CLS (CLS &&) noexcept                 = delete; \
+    constexpr CLS & operator=(const CLS &) noexcept = delete; \
+    constexpr CLS & operator=(CLS &&) noexcept      = delete \
 
-#define MOVABLE_ONLY( classname ) \
+#define MOVABLE_ONLY( CLS ) \
     public: \
-    constexpr classname (const classname & other) noexcept            = delete; \
-    constexpr classname (classname && other) noexcept                 = default; \
-    constexpr classname & operator=(const classname & other) noexcept = delete; \
-    constexpr classname & operator=(classname && other) noexcept      = default \
+    constexpr CLS (const CLS &) noexcept            = delete; \
+    constexpr CLS (CLS &&) noexcept                 = default; \
+    constexpr CLS & operator=(const CLS &) noexcept = delete; \
+    constexpr CLS & operator=(CLS &&) noexcept      = default \
 
-namespace utils
+namespace util
 {
     template <class T, ENABLE_IF(IS_POINTER(T))>
     constexpr void safe_del(T* _ptr)
@@ -94,7 +89,7 @@ namespace utils
     inline std::string get_time_of_day()
     {
         const std::time_t now = std::time(nullptr);
-        std::tm local_buf;
+        std::tm local_buf = {};
         const errno_t err = gmtime_s(&local_buf, &now);
         sws_assert(err == 0);
         std::stringstream ss;

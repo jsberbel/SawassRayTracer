@@ -10,106 +10,86 @@
 #include "core/math/aabb.h"
 
 #include "engine/ray.h"
-#include "engine/geometry/hit.h"
-#include "engine/material/material.h"
+#include "engine/geometry/entity.h"
 
-class SphereBase : public IHitable
+class Sphere : public Entity
 {
-MOVABLE_ONLY( SphereBase );
+    //MOVABLE_ONLY(Sphere);
 
 public:
-    constexpr SphereBase(Material* _mat, f32 _radius);
-    ~SphereBase() override = default;
+    template <class TM, ENABLE_IF(IS_BASE_OF(TM, Material))>
+    explicit Sphere(const fv3& _center, f32 _radius, TM&& _mat);
+    template <class TM, ENABLE_IF(IS_BASE_OF(TM, Material))>
+    explicit Sphere(const fv3& _start_pos, const fv3& _target_pos, f32 _radius, TM&& _mat);
+    ~Sphere() override = default;
 
-    inline bool hit(const Ray& _ray, f32 _tmin, f32 _tmax, Hit* _hit) const override;
+    inline b32 hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const override;
+
+    inline AABB get_bounding_box(f32 _time) const override;
+    inline AABB get_bounding_box(f32 _t0, f32 _t1) const override;
 
 protected:
-    constexpr bool solve(f32 _root, f32 _tmin, f32 _tmax, const Ray& _ray, Hit* _hit) const;
-    virtual inline fv3 get_center(f32 _time) const = 0;
+    constexpr b32 solve(f32 _root, f32 _time, f32 _zmin, f32 _zmax, const Ray& _ray, Hit* hit_) const;
 
 public:
-    Material* material;
-
-protected:
-    f32 m_radius;
+    f32 radius = 0.f;
 };
 
-class StaticSphere : public SphereBase
+template <class TM, class>
+inline Sphere::Sphere(const fv3& _center, f32 _radius, TM&& _mat)
+    : Entity(new TM(std::forward<TM>(_mat)))
+    , radius(_radius)
 {
-MOVABLE_ONLY( StaticSphere );
-
-public:
-    template <class TMaterial>
-    constexpr StaticSphere(const fv3& _center, f32 _radius, TMaterial&& _mat);
-
-    ~StaticSphere() override = default;
-
-    inline bool compute_bb(f32 _t0, f32 _t1, aabb* _box) const override;
-
-protected:
-    inline fv3 get_center(f32 _time) const override;
-
-private:
-    fv3 m_position;
-};
-
-class DynamicSphere : public SphereBase
-{
-MOVABLE_ONLY( DynamicSphere );
-
-public:
-    template <class TMaterial>
-    constexpr DynamicSphere(const fv3& _start_pos, const fv3& _end_pos, f32 _start_time, f32 _end_time, f32 _radius, TMaterial&& _mat);
-
-    ~DynamicSphere() override = default;
-
-    inline bool compute_bb(f32 _t0, f32 _t1, aabb* _box) const override;
-
-protected:
-    inline fv3 get_center(f32 _time) const override;
-
-public:
-    fv3 start_pos;
-    fv3 end_pos;
-    f32 start_time;
-    f32 end_time;
-};
-
-// SphereBase ---------------------------------------
-
-constexpr SphereBase::SphereBase(Material* _mat, f32 _radius)
-    : material(_mat)
-    , m_radius(_radius)
-{
+    Entity::set_position(_center);
 }
 
-constexpr bool SphereBase::solve(f32 _root, f32 _tmin, f32 _tmax, const Ray& _ray, Hit* _hit) const
+template <class TM, class>
+inline Sphere::Sphere(const fv3& _start_pos, const fv3& _target_pos, f32 _radius, TM&& _mat)
+    : Entity(new TM(std::forward<TM>(_mat)))
+    , radius(_radius)
 {
-    sws_assert( _hit );
+    Entity::set_position(_start_pos, _target_pos);
+}
 
-    if (_root > _tmin && _root < _tmax)
+inline AABB Sphere::get_bounding_box(f32 _time) const
+{
+    return AABB(get_position(_time) - fv3(radius), get_position(_time) + fv3(radius));
+}
+
+inline AABB Sphere::get_bounding_box(f32 _t0, f32 _t1) const
+{
+    const AABB t0_box(get_position(_t0) - fv3(radius), get_position(_t0) + fv3(radius));
+    const AABB t1_box(get_position(_t1) - fv3(radius), get_position(_t1) + fv3(radius));
+    return AABB::get_surrounding_box(t0_box, t1_box);
+}
+
+constexpr b32 Sphere::solve(f32 _root, f32 _time, f32 _zmin, f32 _zmax, const Ray& _ray, Hit* hit_) const
+{
+    sws_assert( hit_ );
+
+    if (_root > _zmin && _root < _zmax)
     {
-        _hit->distance = _root;
-        _hit->point    = _ray.point_at(_hit->distance);
-        _hit->normal   = (_hit->point - get_center(_ray.time)) / m_radius;
+        hit_->distance = _root;
+        hit_->point    = _ray.point_at(hit_->distance);
+        hit_->normal   = (hit_->point - get_position(_time)) / radius;
         return true;
     }
     return false;
 }
 
-inline bool SphereBase::hit(const Ray& _ray, f32 _tmin, f32 _tmax, Hit* _hit) const
+inline b32 Sphere::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const
 {
-    sws_assert( _hit );
+    sws_assert( hit_ );
 
     // Sphere equations:
     // x*x + y*y + z*z = R*R
     // Dot( p(t)-C, p(t)-C ) = R*R
     // t*t*Dot(B,B) + 2*t*Dot(B,A-C) + Dot(A-C,A-C) - R*R = 0
 
-    const fv3 oc = _ray.origin - get_center(_ray.time);
+    const fv3 oc = _ray.origin - get_position(_time);
     const f32 a = math::dot(_ray.direction, _ray.direction);
     const f32 b = math::dot(oc, _ray.direction);
-    const f32 c = math::dot(oc, oc) - m_radius * m_radius;
+    const f32 c = math::dot(oc, oc) - radius * radius;
     const f32 d = b * b - a * c;
 
     if (d > 0) // if solution has 2 real roots
@@ -117,55 +97,8 @@ inline bool SphereBase::hit(const Ray& _ray, f32 _tmin, f32 _tmax, Hit* _hit) co
         const f32 root1 = (-b - std::sqrt(d)) / a;
         const f32 root2 = (-b + std::sqrt(d)) / a;
 
-        return solve(root1, _tmin, _tmax, _ray, _hit) || 
-               solve(root2, _tmin, _tmax, _ray, _hit);
+        return solve(root1, _time, _zmin, _zmax, _ray, hit_) || 
+               solve(root2, _time, _zmin, _zmax, _ray, hit_);
     }
     return false;
-}
-
-// StaticSphere ---------------------------------------
-
-template <class TMaterial>
-constexpr StaticSphere::StaticSphere(const fv3& _center, f32 _radius, TMaterial&& _material)
-    : SphereBase(new TMaterial(std::forward<TMaterial>(_mat)), _radius)
-    , m_position(_center)
-{
-}
-
-bool StaticSphere::compute_bb(f32 _t0, f32 _t1, aabb* _box) const
-{
-    sws_assert( _box );
-    *_box = aabb(m_position - fv3(m_radius), m_position + fv3(m_radius));
-    return true;
-}
-
-inline fv3 StaticSphere::get_center(f32 _time) const
-{
-    return m_position;
-}
-
-// DynamicSphere ---------------------------------------
-
-template <class TMaterial>
-constexpr DynamicSphere::DynamicSphere(const fv3& _start_pos, const fv3& _end_pos, f32 _start_time, f32 _end_time, f32 _radius, TMaterial&& _mat)
-    : SphereBase(new TMaterial(std::forward<TMaterial>(_mat)), _radius)
-    , m_start_pos(_start_pos)
-    , m_end_pos(_end_pos)
-    , m_start_time(_start_time)
-    , m_end_time(_end_time)
-{
-}
-
-bool DynamicSphere::compute_bb(f32 _t0, f32 _t1, aabb* _box) const
-{
-    sws_assert( _box );
-    aabb t0_box(get_center(_t0) - fv3(m_radius), get_center(_t0) + fv3(m_radius));
-    aabb t1_box(get_center(_t1) - fv3(m_radius), get_center(_t1) + fv3(m_radius));
-    *_box = aabb::get_surrounding_box(t0_box, t1_box);
-    return true;
-}
-
-inline fv3 DynamicSphere::get_center(f32 _time) const
-{
-    return start_pos + ((_time - start_time) / (end_time - start_time)) * (end_pos - start_pos);
 }

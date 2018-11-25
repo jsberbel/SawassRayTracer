@@ -12,6 +12,7 @@
 #include "core/traits.h"
 
 #include <cmath>
+#include <limits>
 #include <xmmintrin.h>
 #include <emmintrin.h>
 
@@ -33,7 +34,7 @@ namespace math
      * Returns whether or not _x is NaN (not a number).
      */
     template <typename T>
-    constexpr T is_nan(const T& _x)
+    constexpr T is_nan(T _x)
     {
         return std::isnan(_x);
     }
@@ -42,7 +43,7 @@ namespace math
      * Returns whether or not _x has finite value (neither NaN nor Infinite).
      */
     template <typename T>
-    constexpr T is_finite(const T& _x)
+    constexpr T is_finite(T _x)
     {
         return std::isfinite(_x);
     }
@@ -51,7 +52,7 @@ namespace math
      * Returns the sign bit if _x is signed.
      */
     template <typename T>
-    constexpr T sign(const T& _x)
+    constexpr T sign(T _x)
     {
         static_assert(std::is_signed<T>::value);
         return _x >= T(0) ? T(1) : T(-1);
@@ -61,10 +62,19 @@ namespace math
      * Returns whether or not _x is negative.
      */
     template <typename T>
-    constexpr b32 is_negative(const T& _x)
+    constexpr b32 is_negative(T _x)
     {
         static_assert(std::is_signed<T>::value);
         return _x < T(0);
+    }
+
+    /**
+     * Returns whether or not _x is in range [0, 1].
+     */
+    template <typename T>
+    constexpr b32 is_normalized(T _x)
+    {
+        return _x >= T(0) && _x <= T(1);
     }
     
     /**
@@ -75,6 +85,15 @@ namespace math
     {
         static_assert(std::is_signed<T>::value);
         return std::abs(_x);
+    }
+    
+    /**
+     * Returns the distance between _x and _y.
+     */
+    template <typename T>
+    constexpr T dist(const T& _x, const T& _y)
+    {
+        return std::abs(_x - _y);
     }
     
     /**
@@ -139,7 +158,7 @@ namespace math
      * @param _e Exponent.
      */
     template <typename T>
-    constexpr T pow(T _b, u32 _e)
+    constexpr T pow(T _b, T _e)
     {
         return std::pow(_b, _e);
     }
@@ -165,10 +184,9 @@ namespace math
      * @param _max    High boundary.
      */
     template <class T>
-    constexpr const T& clamp(const T& _x, const T& _min, const T& _max)
+    constexpr const T& clamp(T _x, T _min, T _max)
     {
-        sws_assert( !_cmp_fn(_max, _min) );
-        return clamp(_x, _min, _max, std::less<>());
+        return math::clamp(_x, _min, _max, std::less<>());
     }
     
     /**
@@ -381,14 +399,14 @@ namespace math
         constexpr T tan_check(const T x)
         {
             // indistinguishable from zero 
-            return GCLIM<T>::epsilon() > Abs(x) ? T(0) : (x < T(0) ? -tan_int(-x) : tan_int(x));
+            return GCLIM<T>::epsilon() > math::abs(x) ? T(0) : (x < T(0) ? -tan_int(-x) : tan_int(x));
         }
     }
 
     template <typename T>
     constexpr return_t<T> tan(const T& _x)
     {
-        return tan_check<return_t<T>>(_x);
+        return internal::tan_check<return_t<T>>(_x);
     }
 
     template <typename T>

@@ -51,5 +51,5 @@ constexpr b32 Material::refract(const fv3& _incident, const fv3& _normal, f32 _r
 constexpr f32 Material::schlick(f32 _cosine, f32 _refractive_idx) noexcept
 {
     const f32 r0 = math::sqr((1.f - _refractive_idx) / (1.f + _refractive_idx));
-    return r0 + (1.f - r0) * math::pow(1.f - _cosine, 5);
+    return r0 + (1.f - r0) * math::pow(1.f - _cosine, 5.f);
 }

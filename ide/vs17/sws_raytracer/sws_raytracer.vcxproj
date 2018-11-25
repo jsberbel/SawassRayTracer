@@ -33,7 +33,7 @@
     <ClInclude Include="..\..\..\src\core\types.h" />
     <ClInclude Include="..\..\..\src\core\utils.h" />
     <ClInclude Include="..\..\..\src\engine\camera.h" />
-    <ClInclude Include="..\..\..\src\engine\geometry\hit.h" />
+    <ClInclude Include="..\..\..\src\engine\geometry\entity.h" />
     <ClInclude Include="..\..\..\src\engine\geometry\sphere.h" />
     <ClInclude Include="..\..\..\src\engine\material\dielectric.h" />
     <ClInclude Include="..\..\..\src\engine\material\lambertian.h" />

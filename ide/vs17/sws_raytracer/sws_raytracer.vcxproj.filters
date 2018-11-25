@@ -75,11 +75,11 @@
     <ClInclude Include="..\..\..\src\engine\material\metal.h">
       <Filter>engine\material</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\geometry\hit.h">
-      <Filter>engine\geometry</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\core\math\v3.h">
       <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\geometry\entity.h">
+      <Filter>engine\geometry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

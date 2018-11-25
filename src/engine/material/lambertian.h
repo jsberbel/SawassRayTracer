@@ -11,7 +11,7 @@
 
 #include <engine/ray.h>
 #include <engine/material/material.h>
-#include <engine/geometry/hit.h>
+#include <engine/geometry/entity.h>
 
 class Lambertian : public Material
 {
@@ -34,8 +34,8 @@ inline b32 Lambertian::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuati
 {
     sws_assert( _attenuation && _scattered );
 
-    const fv3 target = _hit.point + _hit.normal + utils::rnd_point_in_unit_sphere();
-    *_scattered = Ray(_hit.point, target - _hit.point, _ray.time);
+    const fv3 target = _hit.point + _hit.normal + util::rnd_point_in_unit_sphere();
+    *_scattered = Ray(_hit.point, target - _hit.point);
     *_attenuation = albedo; // TODO(jserrano): add scattering probability
     return true;
 }

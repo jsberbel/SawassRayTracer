@@ -12,7 +12,7 @@
 
 #include <engine/ray.h>
 #include <engine/material/material.h>
-#include <engine/geometry/hit.h>
+#include <engine/geometry/entity.h>
 
 class Metal : public Material
 {
@@ -39,7 +39,7 @@ inline b32 Metal::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, R
     sws_assert( _attenuation && _scattered );
 
     const fv3 reflected = reflect(_ray.direction.get_normalized(), _hit.normal);
-    *_scattered = Ray(_hit.point, reflected + fuzziness * utils::rnd_point_in_unit_sphere(), _ray.time);
+    *_scattered = Ray(_hit.point, reflected + fuzziness * util::rnd_point_in_unit_sphere());
     *_attenuation = albedo;
     return (math::dot(_scattered->direction, _hit.normal) > 0.f);
 }
