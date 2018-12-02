@@ -7,17 +7,11 @@
     <Filter Include="engine">
       <UniqueIdentifier>{eb7f9376-c20c-4542-9a56-f4408d463d23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="engine\geometry">
-      <UniqueIdentifier>{b0c2fbe5-96c5-42e8-abb3-5dd5c83d227b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="scenes">
       <UniqueIdentifier>{94bdf5e9-4df1-49c3-b67d-f6993fae0179}</UniqueIdentifier>
     </Filter>
     <Filter Include="core\math">
       <UniqueIdentifier>{8f2980ef-2861-46f6-8f14-9f21b453fd39}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="engine\material">
-      <UniqueIdentifier>{c6381582-6096-4c39-a8d6-3c46945898ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -51,35 +45,47 @@
     <ClInclude Include="..\..\..\src\core\math\v4.h">
       <Filter>core\math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\core\math\v3.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\src\engine\camera.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\dielectric.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\entity.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\hitable.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\hitablelist.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\lambertian.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\material.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\metal.h">
       <Filter>engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\engine\ray.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\world.h">
+    <ClInclude Include="..\..\..\src\engine\sphere.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\geometry\sphere.h">
-      <Filter>engine\geometry</Filter>
+    <ClInclude Include="..\..\..\src\engine\texture.h">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\material\dielectric.h">
-      <Filter>engine\material</Filter>
+    <ClInclude Include="..\..\..\src\engine\transform.h">
+      <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\material\lambertian.h">
-      <Filter>engine\material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\material\material.h">
-      <Filter>engine\material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\material\metal.h">
-      <Filter>engine\material</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\core\math\v3.h">
-      <Filter>core\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\geometry\entity.h">
-      <Filter>engine\geometry</Filter>
+    <ClInclude Include="..\..\..\src\engine\bvh.h">
+      <Filter>engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

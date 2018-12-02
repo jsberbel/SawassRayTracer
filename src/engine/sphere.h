@@ -10,23 +10,21 @@
 #include "core/math/aabb.h"
 
 #include "engine/ray.h"
-#include "engine/geometry/entity.h"
+#include "engine/entity.h"
 
 class Sphere : public Entity
 {
-    //MOVABLE_ONLY(Sphere);
+    MOVABLE_ONLY(Sphere);
 
 public:
     template <class TM, ENABLE_IF(IS_BASE_OF(TM, Material))>
-    explicit Sphere(const fv3& _center, f32 _radius, TM&& _mat);
-    template <class TM, ENABLE_IF(IS_BASE_OF(TM, Material))>
-    explicit Sphere(const fv3& _start_pos, const fv3& _target_pos, f32 _radius, TM&& _mat);
+    explicit Sphere(Transform&& _tf, f32 _radius, TM&& _mat);
     ~Sphere() override = default;
 
     inline b32 hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const override;
-
-    inline AABB get_bounding_box(f32 _time) const override;
-    inline AABB get_bounding_box(f32 _t0, f32 _t1) const override;
+    
+    inline b32 compute_aabb(f32 _time, AABB* aabb_) const override;
+    inline b32 compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override;
 
 protected:
     constexpr b32 solve(f32 _root, f32 _time, f32 _zmin, f32 _zmax, const Ray& _ray, Hit* hit_) const;
@@ -36,42 +34,38 @@ public:
 };
 
 template <class TM, class>
-inline Sphere::Sphere(const fv3& _center, f32 _radius, TM&& _mat)
-    : Entity(new TM(std::forward<TM>(_mat)))
+inline Sphere::Sphere(Transform&& _tf, f32 _radius, TM&& _mat)
+    : Entity(std::move(_tf), new TM(std::forward<TM>(_mat)))
     , radius(_radius)
 {
-    Entity::set_position(_center);
 }
 
-template <class TM, class>
-inline Sphere::Sphere(const fv3& _start_pos, const fv3& _target_pos, f32 _radius, TM&& _mat)
-    : Entity(new TM(std::forward<TM>(_mat)))
-    , radius(_radius)
+inline b32 Sphere::compute_aabb(f32 _time, AABB* aabb_) const
 {
-    Entity::set_position(_start_pos, _target_pos);
+    sws_assert(aabb_);
+    aabb_->set(transform.get_position(_time) - fv3(radius), transform.get_position(_time) + fv3(radius));
+    return true;
 }
 
-inline AABB Sphere::get_bounding_box(f32 _time) const
+inline b32 Sphere::compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const
 {
-    return AABB(get_position(_time) - fv3(radius), get_position(_time) + fv3(radius));
-}
-
-inline AABB Sphere::get_bounding_box(f32 _t0, f32 _t1) const
-{
-    const AABB t0_box(get_position(_t0) - fv3(radius), get_position(_t0) + fv3(radius));
-    const AABB t1_box(get_position(_t1) - fv3(radius), get_position(_t1) + fv3(radius));
-    return AABB::get_surrounding_box(t0_box, t1_box);
+    sws_assert(aabb_);
+    const AABB t0_box(transform.get_position(_t0) - fv3(radius), transform.get_position(_t0) + fv3(radius));
+    const AABB t1_box(transform.get_position(_t1) - fv3(radius), transform.get_position(_t1) + fv3(radius));
+    *aabb_ = AABB::get_surrounding_box(t0_box, t1_box);
+    return true;
 }
 
 constexpr b32 Sphere::solve(f32 _root, f32 _time, f32 _zmin, f32 _zmax, const Ray& _ray, Hit* hit_) const
 {
-    sws_assert( hit_ );
+    sws_assert(hit_);
 
     if (_root > _zmin && _root < _zmax)
     {
         hit_->distance = _root;
         hit_->point    = _ray.point_at(hit_->distance);
-        hit_->normal   = (hit_->point - get_position(_time)) / radius;
+        hit_->normal   = (hit_->point - transform.get_position(_time)) / radius;
+        hit_->material = material;
         return true;
     }
     return false;
@@ -79,14 +73,14 @@ constexpr b32 Sphere::solve(f32 _root, f32 _time, f32 _zmin, f32 _zmax, const Ra
 
 inline b32 Sphere::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const
 {
-    sws_assert( hit_ );
+    sws_assert(hit_);
 
     // Sphere equations:
     // x*x + y*y + z*z = R*R
     // Dot( p(t)-C, p(t)-C ) = R*R
     // t*t*Dot(B,B) + 2*t*Dot(B,A-C) + Dot(A-C,A-C) - R*R = 0
 
-    const fv3 oc = _ray.origin - get_position(_time);
+    const fv3 oc = _ray.origin - transform.get_position(_time);
     const f32 a = math::dot(_ray.direction, _ray.direction);
     const f32 b = math::dot(oc, _ray.direction);
     const f32 c = math::dot(oc, oc) - radius * radius;
@@ -97,8 +91,8 @@ inline b32 Sphere::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hi
         const f32 root1 = (-b - std::sqrt(d)) / a;
         const f32 root2 = (-b + std::sqrt(d)) / a;
 
-        return solve(root1, _time, _zmin, _zmax, _ray, hit_) || 
-               solve(root2, _time, _zmin, _zmax, _ray, hit_);
+        return (solve(root1, _time, _zmin, _zmax, _ray, hit_) ||
+                solve(root2, _time, _zmin, _zmax, _ray, hit_));
     }
     return false;
 }

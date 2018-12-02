@@ -42,7 +42,7 @@ namespace util
     }
 
     template <class T, ENABLE_IF(IS_REAL(T) || IS_INT(T))>
-    constexpr T rnd(T _beg, T _end)
+    constexpr T rand(T _beg, T _end)
     {
         static std::random_device rnd_device;
         static std::mt19937_64 mt_engine(rnd_device());
@@ -60,28 +60,33 @@ namespace util
         return T(0);
     }
 
-    constexpr f32 rnd_01()
+    constexpr f64 drand_01()
     {
-        return rnd(0.f, 1.f);
+        return rand(0., 1.);
+    }
+
+    constexpr f32 frand_01()
+    {
+        return rand(0.f, 1.f);
     }
     
-    constexpr fv3 rnd_unit_fv3()
+    constexpr fv3 rand_unit_fv3()
     {
-        return fv3(rnd_01(), rnd_01(), rnd_01());
+        return fv3(frand_01(), frand_01(), frand_01());
     }
     
-    constexpr fv3 rnd_point_in_unit_sphere()
+    constexpr fv3 rand_point_in_unit_sphere()
     {
         fv3 point;
-        do point = 2.f * fv3(rnd_01(), rnd_01(), 0.f) - fv3(1.f, 1.f, 0.f);
+        do point = 2.f * fv3(frand_01(), frand_01(), 0.f) - fv3(1.f, 1.f, 0.f);
         while (math::dot(point, point) >= 1.f);
         return point;
     }
     
-    constexpr fv3 rnd_point_in_unit_disk()
+    constexpr fv3 rand_point_in_unit_disk()
     {
         fv3 point;
-        do point = 2.f * rnd_unit_fv3() - fv3(1.f);
+        do point = 2.f * rand_unit_fv3() - fv3(1.f);
         while (point.get_sqrlength() >= 1.f);
         return point;
     }

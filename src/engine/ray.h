@@ -11,7 +11,7 @@
 
 class Ray
 {
-MOVABLE_ONLY( Ray );
+    MOVABLE_ONLY( Ray );
 
 public:
     constexpr Ray() noexcept;

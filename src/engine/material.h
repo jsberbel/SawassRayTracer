@@ -15,7 +15,7 @@ struct Hit;
 
 class Material
 {
-MOVABLE_ONLY( Material );
+    MOVABLE_ONLY( Material );
 
 public:
     Material() = default;

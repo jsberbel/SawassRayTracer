@@ -43,7 +43,7 @@ namespace prof
     {
         std::string tag     = "";
         f64 total_seconds   = 0.;
-        f64 ms_average      = 0.;
+        f64 avg_seconds     = 0.;
     };
     
     static inline void push_mark(const std::string& _tag);
@@ -111,7 +111,7 @@ namespace prof
             const std::vector<u64>& durations = x.second.durations;
             const f64 total_ms = static_cast<f64>(std::accumulate(durations.begin(), durations.end(), 0ull)) / 1000'000.;
             const f64 average_ms = total_ms / durations.size();
-            return ProfResult { x.first, total_ms / 1000., average_ms };
+            return ProfResult { x.first, total_ms / 1000., average_ms / 1000. };
         });
 
         g_marks.clear();
@@ -140,7 +140,12 @@ namespace prof
         sws_assert( file_stream.good() && file_stream.is_open() );
 
         for (const ProfResult& pr : results)
-            file_stream << pr.tag << " => " << pr.total_seconds << "s (avg: " << pr.ms_average << "ms)" << std::endl;
+        {
+            file_stream << util::str_fmt("%s => %fs (avg: %fs)",
+                                         pr.tag.c_str(),
+                                         pr.total_seconds,
+                                         pr.avg_seconds);
+        }
 
         file_stream.close();
     }

@@ -56,7 +56,7 @@ inline Camera::Camera(const fv3& _look_from, const fv3& _look_at, u32 _img_width
 
 inline Ray Camera::trace_ray(f32 s, f32 t) const
 {
-    const fv3 rnd_in_lens_disk = m_lens_radius * util::rnd_point_in_unit_disk();
+    const fv3 rnd_in_lens_disk = m_lens_radius * util::rand_point_in_unit_disk();
     const fv3 offset = (m_right * rnd_in_lens_disk.x) + (m_up * rnd_in_lens_disk.y);
     return Ray(m_origin + offset, m_lower_left_corner + s * m_horizontal + t * m_vertical - m_origin - offset);
 }

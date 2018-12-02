@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <engine/material/material.h>
-#include <engine/geometry/entity.h>
+#include <engine/material.h>
+#include <engine/entity.h>
 #include <engine/ray.h>
 
 #include <core/math/math.h>
@@ -63,7 +63,7 @@ inline b32 Dielectric::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuati
     const bool is_refracted = refract(_ray.direction, outward_normal, refractive_ratio, &refracted);
     const f32 reflection_probability = (is_refracted) ? schlick(cosine, refractive_idx) : 1.f;
 
-    const bool is_reflected = util::rnd_01() < reflection_probability;
+    const bool is_reflected = util::frand_01() < reflection_probability;
     *_scattered = Ray(_hit.point, (is_reflected) ? reflected : refracted);
 
     return true;

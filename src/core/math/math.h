@@ -410,6 +410,24 @@ namespace math
     }
 
     template <typename T>
+    constexpr T sin(const T& _x)
+    {
+        return std::sin(_x);
+    }
+
+    template <typename T>
+    constexpr T cos(const T& _x)
+    {
+        return std::cos(_x);
+    }
+
+    template <typename T>
+    constexpr T asin(const T& _x)
+    {
+        return std::asin(_x);
+    }
+
+    template <typename T>
     constexpr T acos(const T& _x)
     {
         return std::acos(_x);

@@ -89,6 +89,9 @@ public:
     constexpr v2<T>& get_xy() { return xy; }
     constexpr v2<T>& get_yz() { return yz; }
 
+    template<auto _axis>
+    constexpr T get() const;
+
 public:
     struct { T x, y, z; };
     struct { T r, g, b; };
@@ -408,6 +411,24 @@ template <class T>
 inline void v3<T>::clear() noexcept
 {
     x = y = z = T(0);
+}
+
+template <class T>
+template<auto _axis>
+constexpr T v3<T>::get() const
+{
+    if constexpr (_axis == decltype(_axis)(0u))
+    {
+        return x;
+    }
+    else if constexpr (_axis == decltype(_axis)(1u))
+    {
+        return y;
+    }
+    else
+    {
+        return z;
+    }
 }
 
 template <class T>

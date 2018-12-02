@@ -32,15 +32,19 @@
     <ClInclude Include="..\..\..\src\core\traits.h" />
     <ClInclude Include="..\..\..\src\core\types.h" />
     <ClInclude Include="..\..\..\src\core\utils.h" />
+    <ClInclude Include="..\..\..\src\engine\bvh.h" />
     <ClInclude Include="..\..\..\src\engine\camera.h" />
-    <ClInclude Include="..\..\..\src\engine\geometry\entity.h" />
-    <ClInclude Include="..\..\..\src\engine\geometry\sphere.h" />
-    <ClInclude Include="..\..\..\src\engine\material\dielectric.h" />
-    <ClInclude Include="..\..\..\src\engine\material\lambertian.h" />
-    <ClInclude Include="..\..\..\src\engine\material\material.h" />
-    <ClInclude Include="..\..\..\src\engine\material\metal.h" />
+    <ClInclude Include="..\..\..\src\engine\dielectric.h" />
+    <ClInclude Include="..\..\..\src\engine\entity.h" />
+    <ClInclude Include="..\..\..\src\engine\hitable.h" />
+    <ClInclude Include="..\..\..\src\engine\hitablelist.h" />
+    <ClInclude Include="..\..\..\src\engine\lambertian.h" />
+    <ClInclude Include="..\..\..\src\engine\material.h" />
+    <ClInclude Include="..\..\..\src\engine\metal.h" />
     <ClInclude Include="..\..\..\src\engine\ray.h" />
-    <ClInclude Include="..\..\..\src\engine\world.h" />
+    <ClInclude Include="..\..\..\src\engine\sphere.h" />
+    <ClInclude Include="..\..\..\src\engine\texture.h" />
+    <ClInclude Include="..\..\..\src\engine\transform.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
