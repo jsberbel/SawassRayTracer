@@ -5,7 +5,7 @@ Modern C++ Ray Tracing (on-going) engine.
 ## Features
 
 * BVH
-* Procedural textures
+* Procedural texturing
 * Antialiasing
 * Diffuse Scattering
 * Reflections
@@ -13,9 +13,9 @@ Modern C++ Ray Tracing (on-going) engine.
 * Advanced Camera Model
 * Defocus Blur
 * Motion Blur
-* Procedural Scene Generation
+* Random Scene Generation
 * Benchmarking
-* PNG Image Support
+* PNG Compression
 
 ## References
 
