@@ -4,7 +4,8 @@ Modern C++ Ray Tracing (on-going) engine.
 
 ## Features
 
-* Static & Dynamic Geometry
+* BVH
+* Procedural textures
 * Antialiasing
 * Diffuse Scattering
 * Reflections
