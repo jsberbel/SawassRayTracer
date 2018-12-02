@@ -47,7 +47,7 @@ constexpr void AABB::set(const fv3& _min, const fv3& _max)
 
 constexpr b32 AABB::is_hit(const Ray& _ray, f32 _tmin, f32 _tmax) const
 {
-    for (mem_idx i = 0u; i < 3u; ++i)
+    for (usz i = 0u; i < 3u; ++i)
     {
         const f32 inv_dir = math::inv(_ray.direction[i]);
         const f32 t0 = math::min((min[i] - _ray.origin[i]) * inv_dir,

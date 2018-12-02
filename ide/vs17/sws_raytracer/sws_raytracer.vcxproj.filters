@@ -16,6 +16,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\main.cpp" />
+    <ClCompile Include="..\..\..\src\engine\perlin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\core\assert.h">
@@ -85,6 +86,12 @@
       <Filter>engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\engine\bvh.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\ptr.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\perlin.h">
       <Filter>engine</Filter>
     </ClInclude>
   </ItemGroup>

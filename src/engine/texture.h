@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/math/v3.h"
+#include "engine/perlin.h"
 
 class Texture
 {
@@ -34,19 +35,26 @@ public:
 
     inline fv3 value(f32 _u, f32 _v, const fv3& _p) const override;
 
+private:
+    Texture* m_odd = nullptr;
+    Texture* m_even = nullptr;
+};
+
+class NoiseTexture : public Texture
+{
 public:
-    Texture* odd = nullptr;
-    Texture* even = nullptr;
+    NoiseTexture() = default;
+    fv3 value(f32 u, f32 v, const fv3& p) const override;
 };
 
 constexpr CheckerTexture::CheckerTexture(Texture* _odd, Texture* _even)
-    : odd(_odd)
-    , even(_even) 
+    : m_odd(_odd)
+    , m_even(_even) 
 {}
 
 inline CheckerTexture::CheckerTexture(CheckerTexture&& _other) noexcept
-    : odd(std::exchange(_other.odd, nullptr))
-    , even(std::exchange(_other.even, nullptr))
+    : m_odd(std::exchange(_other.m_odd, nullptr))
+    , m_even(std::exchange(_other.m_even, nullptr))
 {
 }
 
@@ -54,20 +62,25 @@ inline constexpr CheckerTexture& CheckerTexture::operator=(CheckerTexture&& _oth
 {
     if (this != std::addressof(_other))
     {
-        odd = std::exchange(_other.odd, nullptr);
-        even = std::exchange(_other.even, nullptr);
+        m_odd = std::exchange(_other.m_odd, nullptr);
+        m_even = std::exchange(_other.m_even, nullptr);
     }
     return *this;
 }
 
 inline CheckerTexture::~CheckerTexture()
 {
-    util::safe_del(odd);
-    util::safe_del(even);
+    util::safe_del(m_odd);
+    util::safe_del(m_even);
 }
 
 inline fv3 CheckerTexture::value(f32 _u, f32 _v, const fv3& _p) const
 {
     const f32 sines = math::sin(10.f*_p.x)*math::sin(10.f*_p.y)*math::sin(10.f*_p.z);
-    return (sines < 0.f) ? odd->value(_u, _v, _p) : even->value(_u, _v, _p);
+    return (sines < 0.f) ? m_odd->value(_u, _v, _p) : m_even->value(_u, _v, _p);
+}
+
+inline fv3 NoiseTexture::value(f32 u, f32 v, const fv3& p) const
+{
+    return fv3(1.f) * Perlin::noise(p);
 }

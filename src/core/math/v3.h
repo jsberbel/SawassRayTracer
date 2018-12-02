@@ -82,6 +82,7 @@ public:
     constexpr v3 get_ceil() const noexcept;
     constexpr T get_shortest_angle(const v3& _axis = right()) const noexcept;
 
+    inline void set(T _val) noexcept;
     inline void set_length(T _len) noexcept;
     inline void normalize() noexcept;
     inline void clear() noexcept;
@@ -388,6 +389,12 @@ constexpr T v3<T>::get_shortest_angle(const v3<T>& _axis) const noexcept
     sws_assert(angle >= T(0));
     sws_assert(angle < math::Pi2<T>);
     return angle;
+}
+
+template<class T>
+inline void v3<T>::set(T _val) noexcept
+{
+    x = y = z = _val;
 }
 
 template <class T>

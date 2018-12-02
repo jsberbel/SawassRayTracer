@@ -18,9 +18,9 @@ public:
     inline b32 compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override;
 
 public:
-    Hitable* left = nullptr;
+    Hitable* left  = nullptr;
     Hitable* right = nullptr;
-    AABB aabb = {};
+    AABB aabb      = {};
 
 private:
     enum class BVHAxis { X, Y, Z };
@@ -48,13 +48,13 @@ inline BVH::BVH(Hitable** _hitables, u32 _nb_hitables, f32 _t0, f32 _t1)
     }
     else if (_nb_hitables == 2u)
     {
-        left = _hitables[0];
+        left  = _hitables[0];
         right = _hitables[1];
     }
     else
     {
         const u32 half_sz = _nb_hitables / 2u;
-        left = new BVH(_hitables, half_sz, _t0, _t1);
+        left  = new BVH(_hitables, half_sz, _t0, _t1);
         right = new BVH(_hitables + half_sz, _nb_hitables - half_sz, _t0, _t1);
     }
 
@@ -78,9 +78,9 @@ inline constexpr BVH& BVH::operator=(BVH&& _other) noexcept
 {
     if (this != std::addressof(_other))
     {
-        left = std::exchange(_other.left, nullptr);
+        left  = std::exchange(_other.left, nullptr);
         right = std::exchange(_other.right, nullptr);
-        aabb = std::move(_other.aabb);
+        aabb  = std::move(_other.aabb);
     }
     return *this;
 }
@@ -99,7 +99,7 @@ inline b32 BVH::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_)
     if (aabb.is_hit(_ray, _zmin, _zmax))
     {
         Hit left_hit, right_hit;
-        const b32 is_hit_left = left->hit(_ray, _time, _zmin, _zmax, &left_hit);
+        const b32 is_hit_left  = left->hit(_ray, _time, _zmin, _zmax, &left_hit);
         const b32 is_hit_right = right->hit(_ray, _time, _zmin, _zmax, &right_hit);
         if (is_hit_left && is_hit_right)
         {
