@@ -8,13 +8,10 @@
 #pragma once
 
 #include "core/math/v3.h"
-#include "core/math/aabb.h"
-#include "engine/material.h"
-
-#include <optional>
 
 class Ray;
 class AABB;
+class Material;
 
 struct Hit
 {

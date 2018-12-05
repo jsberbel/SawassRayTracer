@@ -27,7 +27,7 @@ inline fv3 generate_color(const Ray& _ray, Hitable* _world, f32 _time, s32 _dept
         if (_depth < 50 && hit.material->scatter(_ray, hit, &attenuation, &scattered))
             return attenuation * generate_color(scattered, _world, _time, _depth + 1);
 
-        return fv3(0.f);
+        return fv3(1.f, 0.f, 1.f);
     }
 
     const fv3 unit_dir = _ray.direction.get_normalized();
@@ -92,16 +92,17 @@ inline Hitable* generate_rnd_world()
 
 inline Hitable* generate_perlin_spheres()
 {
-    Texture* pertext = new NoiseTexture();
+    Texture* pertext = new NoiseTexture(1);
+    Texture* pertext2 = new NoiseTexture(2);
     HitableList* list = new HitableList(2);
     list->add<Sphere>(Transform(fv3(0, -1000, 0)), 1000.f, Lambertian(pertext));
-    list->add<Sphere>(Transform(fv3(0, 2, 0)), 2.f, Lambertian(pertext));
+    list->add<Sphere>(Transform(fv3(0, 2, 0)), 2.f, Lambertian(pertext2));
     return list;
 }
 
 int main()
 {
-    PROFILER_BATCH_START(5);
+    PROFILER_BATCH_START(1);
 
     constexpr u32 width = 600;
     constexpr u32 height = 480;
@@ -110,21 +111,12 @@ int main()
     std::vector<rgb> data;
     data.reserve(width * height);
 
-    Hitable* world = generate_perlin_spheres();
-
-    /*world.add<Sphere>( fv3( 0.f, 0.f, -1.f ),       0.5f,    Lambertian( fv3( 0.8f, 0.3f, 0.3f ) ) );
-    world.add<Sphere>( fv3( 0.f, -100.5f, -1.f ),   100.f,   Lambertian( fv3( 0.8f, 0.8f, 0.f ) ) );
-    world.add<Sphere>( fv3( 1.f, 0.f, -1.f ),       0.5f,    Metal( fv3( 0.8f, 0.6f, 0.2f ), 0.3f ) );
-    world.add<Sphere>( fv3( -1.f, 0.f, -1.f ),      0.5f,    Dielectric( 1.5f ) );
-    world.add<Sphere>( fv3( -1.f, 0.f, -1.f ),     -0.45f,   Dielectric( 1.5f ) );*/
-
-    /*f32 R = std::cos( Math::PI<f32> / 4.f );
-    world.add<Sphere>( fv3( -R, 0.f, -1.f ), R, Lambertian( fv3( 0.f, 0.f, 1.f ) ) );
-    world.add<Sphere>( fv3( +R, 0.f, -1.f ), R, Lambertian( fv3( 1.f, 0.f, 0.f ) ) );*/
+    Hitable* world = generate_rnd_world();
+    //Hitable* world = generate_perlin_spheres();
 
     constexpr fv3 look_from(-13.f, 2.f, 3.f);
     constexpr fv3 look_at(0.f, 0.f, 0.f);
-    constexpr f32 v_FOV = 20.f;
+    constexpr f32 v_FOV = 25.f;
     constexpr f32 aperture = 0.f;
     Camera camera(look_from, look_at, width, height, v_FOV, aperture);
 

@@ -24,7 +24,7 @@ public:
     constexpr Lambertian& operator=(Lambertian&& _other) noexcept;
     virtual inline ~Lambertian();
 
-    inline b32 scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, Ray* _scattered) const noexcept override;
+    inline b32 scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept override;
 
 public:
     Texture* albedo;
@@ -54,12 +54,12 @@ inline Lambertian::~Lambertian()
     util::safe_del(albedo);
 }
 
-inline b32 Lambertian::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, Ray* _scattered) const noexcept
+inline b32 Lambertian::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept
 {
-    sws_assert( _attenuation && _scattered );
+    sws_assert(attenuation_ && scattered_);
 
     const fv3 target = _hit.point + _hit.normal + util::rand_point_in_unit_sphere();
-    *_scattered = Ray(_hit.point, target - _hit.point);
-    *_attenuation = albedo->value(0, 0, _hit.point); // TODO(jserrano): add scattering probability
+    *scattered_ = Ray(_hit.point, target - _hit.point);
+    *attenuation_ = albedo->value(0, 0, _hit.point); // TODO(jserrano): add scattering probability
     return true;
 }

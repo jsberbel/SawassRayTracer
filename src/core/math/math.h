@@ -253,6 +253,15 @@ namespace math
     }
     
     /**
+     * Returns an hermite cubic interpolation for _x.
+     */
+    template <class T>
+    constexpr T smoothstep(T _x)
+    {
+        return _x*_x*(T(3)-T(2)*_x);
+    }
+    
+    /**
      * Maps _x in range [_in_min, _in_max] to range [_out_min, _out_max].
      * @param _x       Value to be mapped.
      * @param _in_min  Low input boundary.

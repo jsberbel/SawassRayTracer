@@ -10,7 +10,7 @@
 #include "core/utils.h"
 
 #include "engine/hitable.h"
-#include "engine/camera.h"
+#include "core/math/aabb.h"
 
 class HitableList : public Hitable
 {
@@ -76,7 +76,7 @@ inline HitableList::~HitableList()
 template <class T, class... TArgs, class>
 constexpr void HitableList::add(TArgs&&... _args)
 {
-    sws_assert(m_size+1 < m_capacity); // TODO!
+    sws_assert(m_size < m_capacity); // TODO!
     m_hitables[m_size++] = new T(std::forward<TArgs>(_args)...);
 }
 

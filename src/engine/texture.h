@@ -43,8 +43,11 @@ private:
 class NoiseTexture : public Texture
 {
 public:
-    NoiseTexture() = default;
-    fv3 value(f32 u, f32 v, const fv3& p) const override;
+    NoiseTexture(f32 _scale = 1.f);
+    fv3 value(f32 _u, f32 _v, const fv3& _p) const override;
+
+public:
+    f32 scale;
 };
 
 constexpr CheckerTexture::CheckerTexture(Texture* _odd, Texture* _even)
@@ -80,7 +83,13 @@ inline fv3 CheckerTexture::value(f32 _u, f32 _v, const fv3& _p) const
     return (sines < 0.f) ? m_odd->value(_u, _v, _p) : m_even->value(_u, _v, _p);
 }
 
-inline fv3 NoiseTexture::value(f32 u, f32 v, const fv3& p) const
+inline NoiseTexture::NoiseTexture(f32 _scale)
+    : scale(_scale)
 {
-    return fv3(1.f) * Perlin::noise(p);
+}
+
+inline fv3 NoiseTexture::value(f32 _u, f32 _v, const fv3& _p) const
+{
+    return fv3(1.f) * Perlin::noise(scale*_p);
+    //return fv3(1.f) * 0.5f * (1 + math::sin(scale*_p.z) + 10*Perlin::turbulence(_p));
 }

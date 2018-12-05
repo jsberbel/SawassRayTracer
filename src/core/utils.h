@@ -29,10 +29,22 @@ namespace fs = std::filesystem;
     constexpr CLS & operator=(const CLS &) noexcept = delete; \
     constexpr CLS & operator=(CLS &&) noexcept      = default \
 
+template <class T>
+class In
+{
+public:
+    constexpr In(const T& _p) : m_param(_p) {}
+    constexpr operator const T&() { return m_param; }
+    constexpr T* operator->() const noexcept { return m_param; }
+
+private:
+    const T& m_param;
+};
+
 namespace util
 {
     template <class T, ENABLE_IF(IS_POINTER(T))>
-    constexpr void safe_del(T* _ptr)
+    constexpr void safe_del(T*& _ptr)
     {
         if (_ptr != nullptr)
         {

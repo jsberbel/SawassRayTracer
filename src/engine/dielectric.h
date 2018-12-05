@@ -21,7 +21,7 @@ MOVABLE_ONLY( Dielectric );
 public:
     constexpr Dielectric(f32 _refractive_idx) noexcept;
 
-    inline b32 scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, Ray* _scattered) const noexcept override;
+    inline b32 scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept override;
 
 public:
     f32 refractive_idx;
@@ -32,11 +32,11 @@ constexpr Dielectric::Dielectric(f32 _refractive_idx) noexcept
 {
 }
 
-inline b32 Dielectric::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, Ray* _scattered) const noexcept
+inline b32 Dielectric::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept
 {
-    sws_assert( _attenuation && _scattered );
+    sws_assert(attenuation_ && scattered_);
 
-    *_attenuation = fv3(1.f); // surface absorbs nothing ( test with fv3(1.f, 1.f, 0.f) )
+    *attenuation_ = fv3(1.f); // surface absorbs nothing ( test with fv3(1.f, 1.f, 0.f) )
 
     fv3 outward_normal;
     f32 refractive_ratio;
@@ -64,7 +64,7 @@ inline b32 Dielectric::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuati
     const f32 reflection_probability = (is_refracted) ? schlick(cosine, refractive_idx) : 1.f;
 
     const bool is_reflected = util::frand_01() < reflection_probability;
-    *_scattered = Ray(_hit.point, (is_reflected) ? reflected : refracted);
+    *scattered_ = Ray(_hit.point, (is_reflected) ? reflected : refracted);
 
     return true;
 }

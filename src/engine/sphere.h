@@ -27,16 +27,18 @@ public:
     inline b32 compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override;
 
 protected:
-    constexpr b32 solve(f32 _root, f32 _time, f32 _zmin, f32 _zmax, const Ray& _ray, Hit* hit_) const;
+    constexpr b32 solve_quadratic(f32 _a, f32 _b, f32 c, f32* x0_, f32* x1_) const;
 
-public:
+private:
     f32 radius = 0.f;
+    f32 sqr_radius = 0.f;
 };
 
 template <class TM, class>
 inline Sphere::Sphere(Transform&& _tf, f32 _radius, TM&& _mat)
     : Entity(std::move(_tf), new TM(std::forward<TM>(_mat)))
     , radius(_radius)
+    , sqr_radius(_radius*_radius)
 {
 }
 
@@ -56,19 +58,26 @@ inline b32 Sphere::compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const
     return true;
 }
 
-constexpr b32 Sphere::solve(f32 _root, f32 _time, f32 _zmin, f32 _zmax, const Ray& _ray, Hit* hit_) const
+constexpr b32 Sphere::solve_quadratic(f32 _a, f32 _b, f32 c, f32* x0_, f32* x1_) const
 {
-    sws_assert(hit_);
+    const f32 discr = _b*_b - _a*c;
+    if (discr <= 0.f)
+        return false;
 
-    if (_root > _zmin && _root < _zmax)
+    //if (discr == 0.f) // solution has 1 real root
+    //{
+    //    *x0_ = *x1_ = -0.5f * _b / _a;
+    //}
+    //else // solution has 2 real roots
     {
-        hit_->distance = _root;
-        hit_->point    = _ray.point_at(hit_->distance);
-        hit_->normal   = (hit_->point - transform.get_position(_time)) / radius;
-        hit_->material = material;
-        return true;
+        *x0_ = (-_b - math::sqrt(discr)) / _a;
+        *x1_ = (-_b + math::sqrt(discr)) / _a;
     }
-    return false;
+
+    //if (*x0_ > *x1_)
+    //    std::swap(*x0_, *x1_);
+ 
+    return true; 
 }
 
 inline b32 Sphere::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const
@@ -80,19 +89,70 @@ inline b32 Sphere::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hi
     // Dot( p(t)-C, p(t)-C ) = R*R
     // t*t*Dot(B,B) + 2*t*Dot(B,A-C) + Dot(A-C,A-C) - R*R = 0
 
-    const fv3 oc = _ray.origin - transform.get_position(_time);
+    const fv3 center = transform.get_position(_time);
+    const fv3 oc = _ray.origin - center;
     const f32 a = math::dot(_ray.direction, _ray.direction);
     const f32 b = math::dot(oc, _ray.direction);
-    const f32 c = math::dot(oc, oc) - radius * radius;
-    const f32 d = b * b - a * c;
+    const f32 c = math::dot(oc, oc) - sqr_radius;
 
-    if (d > 0) // if solution has 2 real roots
+    /*f32 x0, x1;
+    if (!solve_quadratic(a, b, c, &x0, &x1))
+        return false;
+
+    if (x0 <= _zmin && x0 >= _zmax)
     {
-        const f32 root1 = (-b - std::sqrt(d)) / a;
-        const f32 root2 = (-b + std::sqrt(d)) / a;
+        x0 = x1;
+        if (x0 <= _zmin && x0 >= _zmax)
+            return false;
+    }*/
 
-        return (solve(root1, _time, _zmin, _zmax, _ray, hit_) ||
-                solve(root2, _time, _zmin, _zmax, _ray, hit_));
-    }
-    return false;
+    //if (x0 > x1)
+    //    std::swap(x0, x1);
+
+    //if (x0 < 0.f) // if t0 is negative, let's use t1 instead 
+    //{ 
+    //    x0 = x1;
+    //    if (x0 < 0.f)
+    //        return false;
+    //}
+
+    //if (x0 <= _zmin && x0 >= _zmax)
+    //    return false;
+
+    const f32 discr = b*b - a*c;
+    if (discr <= 0.f)
+        return false;
+
+    f32 root = (-b - math::sqrt(discr)) / a;
+    if (root <= _zmin && root >= _zmax)
+        root = (-b + math::sqrt(discr)) / a;
+
+    if (root <= _zmin && root >= _zmax)
+        return false;
+
+    hit_->distance = root;
+    hit_->point    = _ray.point_at(hit_->distance);
+    hit_->normal   = (hit_->point - center) / radius;
+    hit_->material = material;
+    return true;
+
+    //if (d > 0) // if solution has 2 real roots
+    //{
+    //    const f32 root1 = (-b - std::sqrt(d)) / a;
+    //    const f32 root2 = (-b + std::sqrt(d)) / a;
+
+    //    if (_root > _zmin && _root < _zmax)
+    //    {
+    //        hit_->distance = _root;
+    //        hit_->point    = _ray.point_at(hit_->distance);
+    //        hit_->normal   = (hit_->point - transform.get_position(_time)) / radius;
+    //        hit_->material = material;
+    //        return true;
+    //    }
+    //    return false;
+
+    //    return (solve(root1, _time, _zmin, _zmax, _ray, hit_) ||
+    //            solve(root2, _time, _zmin, _zmax, _ray, hit_));
+    //}
+    //return false;
 }
