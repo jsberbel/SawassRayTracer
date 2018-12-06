@@ -50,6 +50,16 @@ public:
     f32 scale;
 };
 
+class NoiseTexture : public Texture
+{
+public:
+    NoiseTexture(f32 _scale = 1.f);
+    fv3 value(f32 _u, f32 _v, const fv3& _p) const override;
+
+public:
+    f32 scale;
+};
+
 constexpr CheckerTexture::CheckerTexture(Texture* _odd, Texture* _even)
     : m_odd(_odd)
     , m_even(_even) 

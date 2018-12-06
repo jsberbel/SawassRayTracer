@@ -23,6 +23,8 @@ namespace math
     */
     template <class T>
     inline constexpr T Pi = T(3.141592653589793238462643383279502884L);
+
+    inline constexpr f32 fPi = Pi<f32>;
     
     /**
      * Constant that represents the perimeter of the unit circle (r = 1).
@@ -374,7 +376,7 @@ namespace math
     template <typename T>
     constexpr T to_radians(T _deg)
     {
-        return (_deg * (math::Pi<f32> / 180.f));
+        return (_deg * (math::fPi / 180.f));
     }
     
     /**
@@ -383,7 +385,7 @@ namespace math
     template <typename T>
     constexpr T to_degrees(T _rad)
     {
-        return (_rad * (180.f / math::Pi<f32>));
+        return (_rad * (180.f / math::fPi));
     }
 
     template <typename T>
@@ -452,8 +454,8 @@ namespace math
     }
 
     template <typename T>
-    constexpr T atan2(const T& _x)
+    constexpr T atan2(const T& _y, const T& _x)
     {
-        return std::atan2(_x);
+        return std::atan2(_y, _x);
     }
 }

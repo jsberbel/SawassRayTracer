@@ -25,6 +25,8 @@ public:
     inline b32 compute_aabb(f32 _time, AABB* aabb_) const override;
     inline b32 compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override;
 
+    static constexpr fv2 get_uv(const fv3& _p);
+
 private:
     f32 radius = 0.f;
     f32 sqr_radius = 0.f;
@@ -51,6 +53,21 @@ inline b32 Sphere::compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const
     const AABB t1_box(transform.get_position(_t1) - fv3(radius), transform.get_position(_t1) + fv3(radius));
     *aabb_ = AABB::get_surrounding_box(t0_box, t1_box);
     return true;
+}
+
+inline constexpr fv2 Sphere::get_uv(const fv3 & _p)
+{
+    // x = cos(phi)*cos(theta)
+    // y = sin(phi)*cos(theta)
+    // z = sin(theta)
+
+    const f32 phi   = math::atan2(_p.z, _p.x);
+    const f32 theta = math::asin(_p.y);
+    const fv2 uv = fv2(
+        1.f - (phi + math::fPi) / (2.f / math::fPi),
+        (theta + math::fPi / 2.f) / math::fPi
+    );
+    return uv;
 }
 
 inline b32 Sphere::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const
