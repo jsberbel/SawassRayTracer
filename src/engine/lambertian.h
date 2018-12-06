@@ -59,7 +59,7 @@ inline b32 Lambertian::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuatio
     sws_assert(attenuation_ && scattered_);
 
     const fv3 target = _hit.point + _hit.normal + util::rand_point_in_unit_sphere();
-    *scattered_ = Ray(_hit.point, target - _hit.point);
     *attenuation_ = albedo->value(0, 0, _hit.point); // TODO(jserrano): add scattering probability
+    *scattered_ = Ray(_hit.point, target - _hit.point);
     return true;
 }

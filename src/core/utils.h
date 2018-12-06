@@ -74,12 +74,12 @@ namespace util
 
     constexpr f64 drand_01()
     {
-        return rand(0., 1.);
+        return util::rand(0., 1.);
     }
 
     constexpr f32 frand_01()
     {
-        return rand(0.f, 1.f);
+        return util::rand(0.f, 1.f);
     }
     
     constexpr fv3 rand_unit_fv3()

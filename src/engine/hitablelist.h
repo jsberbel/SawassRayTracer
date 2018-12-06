@@ -15,7 +15,6 @@
 class HitableList : public Hitable
 {
 public:
-    constexpr HitableList();
     inline HitableList(u32 _capacity);
     constexpr HitableList(const HitableList&) noexcept = delete;
     constexpr HitableList& operator=(const HitableList&) noexcept = delete;
@@ -23,10 +22,8 @@ public:
     constexpr HitableList& operator=(HitableList&& _other) noexcept;
     virtual inline ~HitableList();
 
-    template <class T, class... TArgs, ENABLE_IF(IS_BASE_OF(T, Hitable))>
-    constexpr void add(TArgs&&... _args);
-
-    constexpr Hitable*& operator[](usz idx) const;
+    constexpr Hitable*& add(Hitable* _h);
+    constexpr Hitable*& operator[](usize _idx) const;
     constexpr Hitable** get_buffer() const;
     constexpr u32 get_size() const;
 
@@ -39,8 +36,6 @@ private:
     u32 m_size = 0u;
     u32 m_capacity = 0u;
 };
-
-constexpr HitableList::HitableList() = default;
 
 inline HitableList::HitableList(u32 _capacity)
     : m_hitables(new Hitable*[_capacity])
@@ -69,21 +64,20 @@ inline constexpr HitableList& HitableList::operator=(HitableList&& _other) noexc
 
 inline HitableList::~HitableList()
 {
-    for (usz idx = 0; idx < m_size; ++idx)
+    for (usize idx = 0; idx < m_size; ++idx)
         util::safe_del(m_hitables[idx]);
 }
 
-template <class T, class... TArgs, class>
-constexpr void HitableList::add(TArgs&&... _args)
+constexpr Hitable*& HitableList::add(Hitable* _h)
 {
-    sws_assert(m_size < m_capacity); // TODO!
-    m_hitables[m_size++] = new T(std::forward<TArgs>(_args)...);
+    sws_assert(m_size < m_capacity);
+    return (m_hitables[m_size++] = _h);
 }
 
-inline constexpr Hitable*& HitableList::operator[](usz idx) const
+inline constexpr Hitable*& HitableList::operator[](usize _idx) const
 {
-    sws_assert(idx < m_size);
-    return m_hitables[idx];
+    sws_assert(_idx < m_size);
+    return m_hitables[_idx];
 }
 
 inline constexpr Hitable** HitableList::get_buffer() const
@@ -104,7 +98,7 @@ inline b32 HitableList::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hi
     b32 has_hit_anything = false;
     f32 closest_dist = _zmax;
 
-    for (usz idx = 0; idx < m_size; ++idx)
+    for (usize idx = 0; idx < m_size; ++idx)
     {
         if (m_hitables[idx]->hit(_ray, _time, _zmin, closest_dist, &tmp_hit))
         {
@@ -132,7 +126,7 @@ inline b32 HitableList::compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const
         return false;
 
     *aabb_ = tmp_aabb;
-    for (usz idx = 1u; idx < m_size; ++idx)
+    for (usize idx = 1u; idx < m_size; ++idx)
     {
         if (!m_hitables[idx]->compute_aabb(_t0, _t1, &tmp_aabb))
             return false;

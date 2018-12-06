@@ -124,6 +124,15 @@ namespace math
     }
 
     /**
+     * Returns the fractional part of _x (e.g., 123.456 -> 0.456).
+     */
+    template <typename T>
+    constexpr T frac(T _x)
+    {
+        return _x - math::floor(_x);
+    }
+
+    /**
      * Returns _x squared (i.e. _x * _x).
      */
     template <typename T>

@@ -18,6 +18,13 @@
 
 #include <vector>
 
+constexpr fv3 background_color(const Ray& _ray)
+{
+    const fv3 unit_dir = _ray.direction.get_normalized();
+    const f32 t = 0.5f * (unit_dir.y + 1.f);
+    return math::lerp(fv3(1.f), fv3(.5f, .7f, 1.f), t);
+}
+
 inline fv3 generate_color(const Ray& _ray, Hitable* _world, f32 _time, s32 _depth)
 {
     if (Hit hit; _world->hit(_ray, _time, 0.001f, std::numeric_limits<f32>::max(), &hit))
@@ -27,12 +34,9 @@ inline fv3 generate_color(const Ray& _ray, Hitable* _world, f32 _time, s32 _dept
         if (_depth < 50 && hit.material->scatter(_ray, hit, &attenuation, &scattered))
             return attenuation * generate_color(scattered, _world, _time, _depth + 1);
 
-        return fv3(1.f, 0.f, 1.f);
+        return fv3::zero();
     }
-
-    const fv3 unit_dir = _ray.direction.get_normalized();
-    const f32 t = 0.5f * (unit_dir.y + 1.f);
-    return math::lerp(fv3(1.f), fv3(.5f, .7f, 1.f), t);
+    return background_color(_ray);
 }
 
 inline fv3 correct_gamma(const fv3& _color)
@@ -41,13 +45,13 @@ inline fv3 correct_gamma(const fv3& _color)
     return fv3(math::sqrt(_color.x), math::sqrt(_color.y), math::sqrt(_color.z));
 }
 
-inline Hitable* generate_rnd_world()
+inline Hitable* generate_rand_world()
 {
     constexpr u32 size = 50000;
     HitableList* list = new HitableList(size);
 
     Texture* checker = new CheckerTexture(new ConstTexture(fv3(0.2f, 0.3f, 0.1f)), new ConstTexture(fv3(0.9f, 0.9f, 0.9f)));
-    list->add<Sphere>(Transform(fv3(0.f, -1000.f, 0.f)), 1000.f, Lambertian(checker));
+    list->add(new Sphere(Transform(fv3(0.f, -1000.f, 0.f)), 1000.f, new Lambertian(checker)));
 
     for (s32 a = -10; a < 10; ++a)
     {
@@ -62,41 +66,40 @@ inline Hitable* generate_rnd_world()
                 {
                     auto rnd_sqr_unit = []() constexpr { return util::frand_01() * util::frand_01(); };
                     Transform tf(center, center + fv3(0.f, 0.5f * util::frand_01(), 0.f));
-                    Lambertian mt(new ConstTexture(fv3(rnd_sqr_unit(), rnd_sqr_unit(), rnd_sqr_unit())));
-                    list->add<Sphere>(std::move(tf), 0.2f, std::move(mt));
+                    Material* mt = new Lambertian(new ConstTexture(fv3(rnd_sqr_unit(), rnd_sqr_unit(), rnd_sqr_unit())));
+                    list->add(new Sphere(std::move(tf), 0.2f, mt));
                 }
                 else if (mat_to_choose < 0.95f) // Metal
                 {
                     auto rnd_half_unit = []() constexpr { return 0.5f * (1.f + util::frand_01()); };
                     Transform tf(center);
-                    Metal mt(fv3(rnd_half_unit(), rnd_half_unit(), rnd_half_unit()), 0.5f * util::frand_01());
-                    list->add<Sphere>(std::move(tf), 0.2f, std::move(mt));
+                    Material* mt = new Metal(fv3(rnd_half_unit(), rnd_half_unit(), rnd_half_unit()), 0.5f * util::frand_01());
+                    list->add(new Sphere(std::move(tf), 0.2f, mt));
                 }
                 else // Glass
                 {
                     Transform tf(center);
-                    Dielectric mt(1.5f);
-                    list->add<Sphere>(std::move(tf), 0.2f, std::move(mt));
+                    list->add(new Sphere(std::move(tf), 0.2f, new Dielectric(1.5f)));
                 }
             }
         }
     }
     
-    list->add<Sphere>(Transform(fv3(0.f, 1.f, 0.f)),  1.f, Dielectric(1.5f));
-    list->add<Sphere>(Transform(fv3(-4.f, 1.f, 0.f)), 1.f, Lambertian(new ConstTexture(fv3(0.4f, 0.2f, 0.1f))));
-    list->add<Sphere>(Transform(fv3(4.f, 1.f, 0.f)),  1.f, Metal(fv3(0.7f, 0.6f, 0.5f), 0.f));
+    list->add(new Sphere(Transform(fv3(0.f, 1.f, 0.f)),  1.f, new Dielectric(1.5f)));
+    list->add(new Sphere(Transform(fv3(-4.f, 1.f, 0.f)), 1.f, new Lambertian(new ConstTexture(fv3(0.4f, 0.2f, 0.1f)))));
+    list->add(new Sphere(Transform(fv3(4.f, 1.f, 0.f)),  1.f, new Metal(fv3(0.7f, 0.2f, 0.5f), 0.f)));
     
-    //return list;
     return new BVH(list->get_buffer(), list->get_size(), 0.0, 1.0);
+    return list;
 }
 
 inline Hitable* generate_perlin_spheres()
 {
-    Texture* pertext = new NoiseTexture(1);
-    Texture* pertext2 = new NoiseTexture(2);
+    Texture* pertext = new NoiseTexture(2);
+    Texture* pertext2 = new NoiseTexture(4);
     HitableList* list = new HitableList(2);
-    list->add<Sphere>(Transform(fv3(0, -1000, 0)), 1000.f, Lambertian(pertext));
-    list->add<Sphere>(Transform(fv3(0, 2, 0)), 2.f, Lambertian(pertext2));
+    list->add(new Sphere(Transform(fv3(0.f, -1000.f, 0.f)), 1000.f, new Lambertian(pertext)));
+    list->add(new Sphere(Transform(fv3(0.f, 2.f, 0.f)), 2.f, new Lambertian(pertext2)));
     return list;
 }
 
@@ -111,8 +114,8 @@ int main()
     std::vector<rgb> data;
     data.reserve(width * height);
 
-    Hitable* world = generate_rnd_world();
-    //Hitable* world = generate_perlin_spheres();
+    //Hitable* world = generate_rnd_world();
+    Hitable* world = generate_perlin_spheres();
 
     constexpr fv3 look_from(-13.f, 2.f, 3.f);
     constexpr fv3 look_at(0.f, 0.f, 0.f);
@@ -147,7 +150,7 @@ int main()
                 const s32 depth = 0;
                 color += generate_color(ray, world, time, depth);
             }
-            color *= inv_nb_samples;
+            color /= nb_samples;
             color = correct_gamma(color);
 
             const rgb rgb((255.99f * color).cast<u8>());

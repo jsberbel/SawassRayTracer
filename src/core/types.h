@@ -26,7 +26,7 @@ using uptr  = std::uintptr_t;
 using sptr  = std::intptr_t;
 
 using std::size_t;
-using usz = size_t;
+using usize = size_t;
 
 #define U32_From_PTR(PTR) ((u32)(size_t)(PTR))
 #define PTR_From_U32(TYPE, VALUE) ((TYPE *)((size_t)VALUE))
