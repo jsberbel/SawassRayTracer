@@ -95,8 +95,8 @@ inline Hitable* generate_rand_world()
 
 inline Hitable* generate_perlin_spheres()
 {
-    Texture* pertext = new NoiseTexture(2);
-    Texture* pertext2 = new NoiseTexture(4);
+    Texture* pertext = new NoiseTexture(1);
+    Texture* pertext2 = new NoiseTexture(3);
     HitableList* list = new HitableList(2);
     list->add(new Sphere(Transform(fv3(0.f, -1000.f, 0.f)), 1000.f, new Lambertian(pertext)));
     list->add(new Sphere(Transform(fv3(0.f, 2.f, 0.f)), 2.f, new Lambertian(pertext2)));

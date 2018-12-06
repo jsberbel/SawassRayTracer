@@ -92,5 +92,8 @@ inline fv3 NoiseTexture::value(f32 _u, f32 _v, const fv3& _p) const
 {
     //return fv3(1.f) * (Perlin::noise(scale*_p));
     //return fv3(1.f) * 0.5f * (1.f + math::sin(scale*_p.x + 5.f*Perlin::turbulence(scale*_p)));
-    return fv3(1.f) * 0.5f * (1.f + math::sin(scale*_p.z + 10.f*Perlin::turbulence(_p)));
+    //return fv3(1.f) * 0.5f * (1.f + math::sin(scale*_p.z + 10.f*Perlin::turbulence(_p)));
+    //return fv3(1.f) * (Perlin::cloud(_p*scale));
+    //return fv3(1.f) * (Perlin::wood(_p*scale));
+    return fv3(1.f) * (Perlin::marble(_p*scale));
 }

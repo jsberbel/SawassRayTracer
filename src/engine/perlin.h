@@ -8,15 +8,19 @@
 class Perlin
 {
 public:
-    static inline f32 noise(const fv3& _p);
-    static constexpr f32 turbulence(const fv3& _p, s32 _depth = 7);
+    static constexpr f32 noise(const fv3& _p);
+    static constexpr f32 turbulence(const fv3& _p, u32 _octaves = 7, f32 _lacunarity = 1.f, f32 _gain = 0.5f);
+    static constexpr f32 marble(const fv3& _p);
+    static constexpr f32 wood(const fv3& _p);
+    static constexpr f32 cloud(const fv3& _p);
 
 private:
     static constexpr usize k_perm_size = 256u;
     static constexpr usize k_perm_mask = k_perm_size - 1u;
     static constexpr usize k_cube_size = 2u;
     
-    static constexpr f32 interpolate(fv3 (&_c)[k_cube_size][k_cube_size][k_cube_size], f32 _u, f32 _v, f32 _w);
+    static constexpr f32 trilerp(fv3 (&_c)[k_cube_size][k_cube_size][k_cube_size], f32 _u, f32 _v, f32 _w);
+    static constexpr f32 fade(f32 _t);
 
     static constexpr void permute(std::array<sv3, k_perm_size>& _arr);
     static inline std::array<sv3, k_perm_size> generate_permutations();
@@ -27,7 +31,7 @@ private:
     static inline std::array<fv3, k_perm_size> s_rvecs = generate_rand_vectors();
 };
 
-inline f32 Perlin::noise(const fv3& _p)
+inline constexpr f32 Perlin::noise(const fv3& _p)
 {
     const s32 i = s32(math::floor(_p.x));
     const s32 j = s32(math::floor(_p.y));
@@ -53,29 +57,45 @@ inline f32 Perlin::noise(const fv3& _p)
         }
     }
 
-    const f32 result = interpolate(cube, xf, yf, zf);
+    const f32 result = trilerp(cube, xf, yf, zf);
     return (result + 1.f) * 0.5f;
 }
 
-inline constexpr f32 Perlin::turbulence(const fv3& _p, s32 _depth)
+inline constexpr f32 Perlin::turbulence(const fv3& _p, u32 _octaves /*= 7*/, f32 _lacunarity /*= 1.f*/, f32 _gain /*= 0.5f*/)
 {
     f32 accum = 0.f;
-    fv3 tmp_p = _p;
-    f32 weight = 1.f;
-    for (s32 i = 0; i < _depth; ++i)
+    f32 scale = 1.f;
+    f32 amplitude = 1.f;
+    for (u32 i = 0; i < _octaves; ++i)
     {
-        accum += weight * noise(tmp_p);
-        weight *= 0.5f;
-        tmp_p *= 2.f;
+        accum += amplitude * noise(_p*scale);
+        scale *= _lacunarity;
+        amplitude *= _gain;
     }
     return math::abs(accum);
 }
 
-inline constexpr f32 Perlin::interpolate(fv3 (&_c)[k_cube_size][k_cube_size][k_cube_size], f32 _u, f32 _v, f32 _w)
+inline constexpr f32 Perlin::marble(const fv3& _p)
 {
-    const f32 uu = math::smoothstep(_u);
-    const f32 vv = math::smoothstep(_v);
-    const f32 ww = math::smoothstep(_w);
+  return math::cos(_p.z * 0.1f + 6.f * turbulence(_p, 5u, 2.f, 0.6f));
+}
+
+inline constexpr f32 Perlin::wood(const fv3& _p)
+{
+  const f32 grain = ((1.f + noise(_p.get_abs())) / 2.f) * 30.f;
+  return (grain - s32(grain));
+}
+
+inline constexpr f32 Perlin::cloud(const fv3& _p)
+{
+  return math::cos(_p.z * 0.5f + 2.f * turbulence(_p, 6u, 2.f, 0.5f) * 0.9f);
+}
+
+inline constexpr f32 Perlin::trilerp(fv3 (&_c)[k_cube_size][k_cube_size][k_cube_size], f32 _u, f32 _v, f32 _w)
+{
+    const f32 uu = fade(_u);
+    const f32 vv = fade(_v);
+    const f32 ww = fade(_w);
 
     f32 accum = 0.f;
     for (usize i = 0; i < k_cube_size; ++i)
@@ -92,6 +112,12 @@ inline constexpr f32 Perlin::interpolate(fv3 (&_c)[k_cube_size][k_cube_size][k_c
         }
     }
     return accum;
+}
+
+inline constexpr f32 Perlin::fade(f32 _t)
+{
+    //return math::smoothstep; // Old fade
+    return _t*_t*_t*(_t*(_t*6.f-15.f)+10.f); // Improved fade
 }
 
 constexpr void Perlin::permute(std::array<sv3, k_perm_size>& _arr)
