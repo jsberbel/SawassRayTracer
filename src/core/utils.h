@@ -13,14 +13,12 @@ namespace fs = std::filesystem;
 
 #define STBI_MSC_SECURE_CRT
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include <stb_image_write.h>
 
 #define NON_COPYABLE( CLS ) \
     public: \
     constexpr CLS (const CLS &) noexcept            = delete; \
-    constexpr CLS (CLS &&) noexcept                 = delete; \
     constexpr CLS & operator=(const CLS &) noexcept = delete; \
-    constexpr CLS & operator=(CLS &&) noexcept      = delete \
 
 #define MOVABLE_ONLY( CLS ) \
     public: \
@@ -146,13 +144,23 @@ namespace util
         printf((_fmt + "\n").c_str(), std::forward<Args>(_args)...);
     }
 
+    inline fs::path get_data_path()
+    {
+        return fs::path("dat");
+    }
+
+    inline fs::path get_output_path()
+    {
+        return fs::path("out");
+    }
+
     inline b32 output_img_to_file(const std::string& _filename, u32 _width, u32 _height, const std::vector<rgb>& _data)
     {
-        if (!fs::exists("output"))
-            fs::create_directory("output");
+        if (!fs::exists(get_output_path()))
+            fs::create_directory(get_output_path());
 
-        const std::string filepath = "output/" + _filename + ".png";
-        return stbi_write_png(filepath.c_str(), _width, _height, 3, &_data[0], 0);
+        const fs::path filepath = get_output_path() / (_filename + ".png");
+        return stbi_write_png(filepath.string().c_str(), _width, _height, 3, &_data[0], 0);
     }
 
     inline b32 output_img_to_incremental_file(u32 _width, u32 _height, const std::vector<rgb>& _data)

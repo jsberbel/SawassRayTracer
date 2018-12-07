@@ -35,13 +35,10 @@
     <ClInclude Include="..\..\..\src\core\utils.h" />
     <ClInclude Include="..\..\..\src\engine\bvh.h" />
     <ClInclude Include="..\..\..\src\engine\camera.h" />
-    <ClInclude Include="..\..\..\src\engine\dielectric.h" />
     <ClInclude Include="..\..\..\src\engine\entity.h" />
     <ClInclude Include="..\..\..\src\engine\hitable.h" />
     <ClInclude Include="..\..\..\src\engine\hitablelist.h" />
-    <ClInclude Include="..\..\..\src\engine\lambertian.h" />
     <ClInclude Include="..\..\..\src\engine\material.h" />
-    <ClInclude Include="..\..\..\src\engine\metal.h" />
     <ClInclude Include="..\..\..\src\engine\perlin.h" />
     <ClInclude Include="..\..\..\src\engine\ray.h" />
     <ClInclude Include="..\..\..\src\engine\sphere.h" />
@@ -130,12 +127,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\dep;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\dep;$(SolutionDir)\..\..\dat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>PROFILING;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>start XCOPY /Y /E /I $(ProjectDir)data $(OutDir)data</Command>
+      <Command>start XCOPY /Y /E /I $(SolutionDir)\..\..\dat $(OutDir)dat</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Deploy needed files to output</Message>
@@ -147,12 +144,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\dep;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\dep;$(SolutionDir)\..\..\dat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>PROFILING;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <PostBuildEvent>
-      <Command>start XCOPY /Y /E /I $(ProjectDir)data $(OutDir)data</Command>
+      <Command>start XCOPY /Y /E /I $(SolutionDir)\..\..\dat $(OutDir)dat</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Deploy needed files to output</Message>
@@ -166,7 +163,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\dep;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\dep;$(SolutionDir)\..\..\dat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>PROFILING;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -175,7 +172,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>start XCOPY /Y /E /I $(ProjectDir)data $(OutDir)data</Command>
+      <Command>start XCOPY /Y /E /I $(SolutionDir)\..\..\dat $(OutDir)dat</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Deploy needed files to output</Message>
@@ -189,7 +186,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\dep;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\dep;$(SolutionDir)\..\..\dat;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PreprocessorDefinitions>PROFILING;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -198,7 +195,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>start XCOPY /Y /E /I $(ProjectDir)data $(OutDir)data</Command>
+      <Command>start XCOPY /Y /E /I $(SolutionDir)\..\..\dat $(OutDir)dat</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Deploy needed files to output</Message>

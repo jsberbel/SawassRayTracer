@@ -64,7 +64,7 @@ inline constexpr fv2 Sphere::get_uv(const fv3 & _p)
     const f32 phi   = math::atan2(_p.z, _p.x);
     const f32 theta = math::asin(_p.y);
     const fv2 uv = fv2(
-        1.f - (phi + math::fPi) / (2.f / math::fPi),
+        1.f - (phi + math::fPi) / (2.f * math::fPi),
         (theta + math::fPi / 2.f) / math::fPi
     );
     return uv;
@@ -98,6 +98,7 @@ inline b32 Sphere::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hi
         hit_->point    = _ray.point_at(hit_->distance);
         hit_->normal   = (hit_->point - center) / radius;
         hit_->material = material;
+        hit_->uv       = get_uv(hit_->normal);
         return true;
     }
     return false;

@@ -133,10 +133,10 @@ namespace prof
     {
         std::vector<ProfResult> results = compute_results();
 
-        if (!fs::exists("profiler"))
-            fs::create_directory("profiler");
+        if (!fs::exists(util::get_output_path()))
+            fs::create_directory(util::get_output_path());
 
-        std::ofstream file_stream("profiler/" + _filename + ".txt", std::fstream::app);
+        std::ofstream file_stream(util::get_output_path() / (_filename + ".txt"), std::fstream::app);
         sws_assert( file_stream.good() && file_stream.is_open() );
 
         for (const ProfResult& pr : results)

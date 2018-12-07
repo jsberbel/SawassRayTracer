@@ -21,6 +21,7 @@ struct Hit
 
     fv3 point          = {};
     fv3 normal         = {};
+    fv2 uv             = {};
     f32 distance       = 0.f;
     Material* material = nullptr;
 };

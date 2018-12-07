@@ -11,10 +11,8 @@
 #include "engine/hitablelist.h"
 #include "engine/sphere.h"
 #include "engine/bvh.h"
-#include "engine/lambertian.h"
-#include "engine/metal.h"
-#include "engine/dielectric.h"
 #include "engine/camera.h"
+#include "engine/material.h"
 
 #include <vector>
 
@@ -95,11 +93,11 @@ inline Hitable* generate_rand_world()
 
 inline Hitable* generate_perlin_spheres()
 {
-    Texture* pertext = new NoiseTexture(1);
-    Texture* pertext2 = new NoiseTexture(3);
+    Texture* t1 = new NoiseTexture(1);
+    Texture* t2 = new ImageTexture(util::get_data_path() / "earth_daymap.jpg");
     HitableList* list = new HitableList(2);
-    list->add(new Sphere(Transform(fv3(0.f, -1000.f, 0.f)), 1000.f, new Lambertian(pertext)));
-    list->add(new Sphere(Transform(fv3(0.f, 2.f, 0.f)), 2.f, new Lambertian(pertext2)));
+    list->add(new Sphere(Transform(fv3(0.f, -1000.f, 0.f)), 1000.f, new Lambertian(t1)));
+    list->add(new Sphere(Transform(fv3(0.f, 2.f, 0.f)), 2.f, new Lambertian(t2)));
     return list;
 }
 
@@ -117,7 +115,7 @@ int main()
     //Hitable* world = generate_rnd_world();
     Hitable* world = generate_perlin_spheres();
 
-    constexpr fv3 look_from(-13.f, 2.f, 3.f);
+    constexpr fv3 look_from(13.f, 2.f, -8.f);
     constexpr fv3 look_at(0.f, 0.f, 0.f);
     constexpr f32 v_FOV = 25.f;
     constexpr f32 aperture = 0.f;

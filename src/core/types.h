@@ -18,6 +18,7 @@ using f64   = double;
 
 using b32   = s32;
 
+using uchar = unsigned char;
 using utf8  = char;
 using utf16 = char16_t;
 using utf32 = char32_t;

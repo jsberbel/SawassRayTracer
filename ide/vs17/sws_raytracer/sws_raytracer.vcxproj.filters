@@ -7,9 +7,6 @@
     <Filter Include="engine">
       <UniqueIdentifier>{eb7f9376-c20c-4542-9a56-f4408d463d23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="scenes">
-      <UniqueIdentifier>{94bdf5e9-4df1-49c3-b67d-f6993fae0179}</UniqueIdentifier>
-    </Filter>
     <Filter Include="core\math">
       <UniqueIdentifier>{8f2980ef-2861-46f6-8f14-9f21b453fd39}</UniqueIdentifier>
     </Filter>
@@ -51,9 +48,6 @@
     <ClInclude Include="..\..\..\src\engine\camera.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\dielectric.h">
-      <Filter>engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\engine\entity.h">
       <Filter>engine</Filter>
     </ClInclude>
@@ -63,13 +57,7 @@
     <ClInclude Include="..\..\..\src\engine\hitablelist.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\lambertian.h">
-      <Filter>engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\engine\material.h">
-      <Filter>engine</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\metal.h">
       <Filter>engine</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\engine\ray.h">
