@@ -23,14 +23,14 @@ namespace math
     */
     template <class T>
     inline constexpr T Pi = T(3.141592653589793238462643383279502884L);
-
-    inline constexpr f32 fPi = Pi<f32>;
+    inline constexpr fx Pif = Pi<fx>;
     
     /**
      * Constant that represents the perimeter of the unit circle (r = 1).
      */
     template <class T>
     inline constexpr T Pi2 = Pi<T> * T(2);
+    inline constexpr fx Pi2f = Pi<fx>;
 
     /**
      * Returns whether or not _x is NaN (not a number).
@@ -64,7 +64,7 @@ namespace math
      * Returns whether or not _x is negative.
      */
     template <typename T>
-    constexpr b32 is_negative(T _x)
+    constexpr bool is_negative(T _x)
     {
         static_assert(std::is_signed<T>::value);
         return _x < T(0);
@@ -74,7 +74,7 @@ namespace math
      * Returns whether or not _x is in range [0, 1].
      */
     template <typename T>
-    constexpr b32 is_normalized(T _x)
+    constexpr bool is_normalized(T _x)
     {
         return _x >= T(0) && _x <= T(1);
     }
@@ -307,7 +307,7 @@ namespace math
      * Returns whether or not _x is almost equal to _x within _eps range.
      */
     template <typename T>
-    constexpr b32 are_almost_equal(const T& _x, const T& _y, T _eps = std::numeric_limits<T>::epsilon())
+    constexpr bool are_almost_equal(const T& _x, const T& _y, T _eps = std::numeric_limits<T>::epsilon())
     {
         return math::abs(_x - _y) <= _eps;
     }
@@ -316,7 +316,7 @@ namespace math
      * Returns whether or not _x is almost null within _eps range.
      */
     template <typename T>
-    constexpr b32 is_almost_null(T _x, T _eps = std::numeric_limits<T>::epsilon())
+    constexpr bool is_almost_null(T _x, T _eps = std::numeric_limits<T>::epsilon())
     {
         return math::abs(_x) <= _eps;
     }
@@ -376,7 +376,7 @@ namespace math
     template <typename T>
     constexpr T to_radians(T _deg)
     {
-        return (_deg * (math::fPi / 180.f));
+        return (_deg * (math::Pif / 180.f));
     }
     
     /**
@@ -385,7 +385,7 @@ namespace math
     template <typename T>
     constexpr T to_degrees(T _rad)
     {
-        return (_rad * (180.f / math::fPi));
+        return (_rad * (180.f / math::Pif));
     }
 
     template <typename T>

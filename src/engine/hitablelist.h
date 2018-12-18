@@ -27,9 +27,8 @@ public:
     constexpr Hitable** get_buffer() const;
     constexpr u32 get_size() const;
 
-    inline b32 hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const override;
-    inline b32 compute_aabb(f32 _time, AABB* aabb_) const override;
-    inline b32 compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override;
+    inline bool hit(const Ray& _ray, f32 _time, f32 _tmin, f32 _tmax, Hit* hit_) const override;
+    inline bool compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override;
 
 private:
     Hitable** m_hitables = nullptr;
@@ -90,17 +89,17 @@ inline constexpr u32 HitableList::get_size() const
     return m_size;
 }
 
-inline b32 HitableList::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const
+inline bool HitableList::hit(const Ray& _ray, f32 _time, f32 _tmin, f32 _tmax, Hit* hit_) const
 {
     sws_assert(hit_);
 
     Hit tmp_hit;
-    b32 has_hit_anything = false;
-    f32 closest_dist = _zmax;
+    bool has_hit_anything = false;
+    f32 closest_dist = _tmax;
 
     for (usize idx = 0; idx < m_size; ++idx)
     {
-        if (m_hitables[idx]->hit(_ray, _time, _zmin, closest_dist, &tmp_hit))
+        if (m_hitables[idx]->hit(_ray, _time, _tmin, closest_dist, &tmp_hit))
         {
             has_hit_anything = true;
             closest_dist = tmp_hit.distance;
@@ -110,13 +109,7 @@ inline b32 HitableList::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hi
 
     return has_hit_anything;
 }
-
-inline b32 HitableList::compute_aabb(f32 _time, AABB* aabb_) const
-{
-    return false;
-};
-
-inline b32 HitableList::compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const
+inline bool HitableList::compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const
 {
     if (m_size == 0)
         return false;

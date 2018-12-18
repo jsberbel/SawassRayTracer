@@ -30,13 +30,7 @@
     <ClInclude Include="..\..\..\src\core\utils.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\core\math\aabb.h">
-      <Filter>core\math</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\core\math\math.h">
-      <Filter>core\math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\core\math\v2.h">
       <Filter>core\math</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\core\math\v4.h">
@@ -63,9 +57,6 @@
     <ClInclude Include="..\..\..\src\engine\ray.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\engine\sphere.h">
-      <Filter>engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\engine\texture.h">
       <Filter>engine</Filter>
     </ClInclude>
@@ -75,11 +66,23 @@
     <ClInclude Include="..\..\..\src\engine\bvh.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\core\ptr.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\engine\perlin.h">
       <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\engine\geometry.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\math\aabb.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\math\algebra.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\path.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\logger.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

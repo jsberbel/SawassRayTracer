@@ -13,9 +13,8 @@ public:
     constexpr BVH& operator=(BVH&& _other) noexcept;
     virtual inline ~BVH();
 
-    inline b32 hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const override;
-    inline b32 compute_aabb(f32 _time, AABB* aabb_) const override;
-    inline b32 compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override;
+    inline bool hit(const Ray& _ray, f32 _time, f32 _tmin, f32 _tmax, Hit* hit_) const override;
+    inline bool compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override;
 
 public:
     Hitable* left  = nullptr;
@@ -28,7 +27,7 @@ private:
     template <BVHAxis _axis>
     struct BoxCmp
     {
-        inline b32 operator()(Hitable* _a, Hitable* _b) const;
+        inline bool operator()(Hitable* _a, Hitable* _b) const;
     };
 };
 
@@ -94,13 +93,13 @@ inline BVH::~BVH()
         util::safe_del(r);
 }
 
-inline b32 BVH::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const
+inline bool BVH::hit(const Ray& _ray, f32 _time, f32 _tmin, f32 _tmax, Hit* hit_) const
 {
-    if (aabb.is_hit(_ray, _zmin, _zmax))
+    if (aabb.is_hit(_ray, _tmin, _tmax))
     {
         Hit left_hit, right_hit;
-        const b32 is_hit_left  = left->hit(_ray, _time, _zmin, _zmax, &left_hit);
-        const b32 is_hit_right = right->hit(_ray, _time, _zmin, _zmax, &right_hit);
+        const bool is_hit_left  = left->hit(_ray, _time, _tmin, _tmax, &left_hit);
+        const bool is_hit_right = right->hit(_ray, _time, _tmin, _tmax, &right_hit);
         if (is_hit_left && is_hit_right)
         {
             *hit_ = std::move((left_hit.distance < right_hit.distance) ? left_hit : right_hit);
@@ -120,20 +119,14 @@ inline b32 BVH::hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_)
     return false;
 }
 
-inline b32 BVH::compute_aabb(f32 _time, AABB* aabb_) const
-{
-    *aabb_ = aabb;
-    return true;
-};
-
-inline b32 BVH::compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const
+inline bool BVH::compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const
 {
     *aabb_ = aabb;
     return true;
 }
 
 template<BVH::BVHAxis _axis>
-inline b32 BVH::BoxCmp<_axis>::operator()(Hitable * _a, Hitable * _b) const
+inline bool BVH::BoxCmp<_axis>::operator()(Hitable * _a, Hitable * _b) const
 {
     AABB box_left, box_right;
     if (!_a->compute_aabb(0, 0, &box_left) ||

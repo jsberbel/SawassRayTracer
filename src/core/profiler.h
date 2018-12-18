@@ -126,17 +126,14 @@ namespace prof
 
     inline void output_to_incremental_file()
     {
-        output_to_file("sws_raytracer_" + util::get_time_of_day());
+        output_to_file("swsrt_" + util::get_time_of_day());
     }
 
     inline void output_to_file(const std::string& _filename)
     {
         std::vector<ProfResult> results = compute_results();
 
-        if (!fs::exists(util::get_output_path()))
-            fs::create_directory(util::get_output_path());
-
-        std::ofstream file_stream(util::get_output_path() / (_filename + ".txt"), std::fstream::app);
+        std::ofstream file_stream(path::get_log_path() / (_filename + ".txt"), std::fstream::app);
         sws_assert( file_stream.good() && file_stream.is_open() );
 
         for (const ProfResult& pr : results)

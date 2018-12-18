@@ -44,12 +44,12 @@
 //    constexpr v4 operator/(const v4& _v) const noexcept;
 //    constexpr v4 operator/(T _s) const noexcept;
 //
-//    constexpr b32 operator==(const v4& _v) const;
-//    constexpr b32 operator!=(const v4& _v) const;
-//    constexpr b32 operator<(const v4& _v) const;
-//    constexpr b32 operator<=(const v4& _v) const;
-//    constexpr b32 operator>(const v4& _v) const;
-//    constexpr b32 operator>=(const v4& _v) const;
+//    constexpr bool operator==(const v4& _v) const;
+//    constexpr bool operator!=(const v4& _v) const;
+//    constexpr bool operator<(const v4& _v) const;
+//    constexpr bool operator<=(const v4& _v) const;
+//    constexpr bool operator>(const v4& _v) const;
+//    constexpr bool operator>=(const v4& _v) const;
 //
 //    friend constexpr std::istream& operator>>(std::istream& _is, v4& _v) noexcept;
 //    friend inline std::ostream& operator<<(std::ostream& _os, const v4& _v) noexcept;
@@ -65,9 +65,9 @@
 //    static constexpr v4 infinity() { return v4(std::numeric_limits<T>::infinity()); }
 //    static constexpr v4 nan()      { return v4(std::numeric_limits<T>::quiet_NaN()); }
 //
-//    constexpr b32 is_nan() const noexcept;
-//    constexpr b32 is_finite() const noexcept;
-//    constexpr b32 is_normalized() const noexcept;
+//    constexpr bool is_nan() const noexcept;
+//    constexpr bool is_finite() const noexcept;
+//    constexpr bool is_normalized() const noexcept;
 //
 //    constexpr T get_sqrlength() const noexcept;
 //    constexpr T get_length() const noexcept;
@@ -248,37 +248,37 @@
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::operator==(const v4& _v) const
+//constexpr bool v4<T>::operator==(const v4& _v) const
 //{
 //    return x == _v.x && y == _v.y && z == _v.z;
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::operator!=(const v4& _v) const
+//constexpr bool v4<T>::operator!=(const v4& _v) const
 //{
 //    return x != _v.x || y != _v.y || z != _v.z;
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::operator<(const v4& _v) const
+//constexpr bool v4<T>::operator<(const v4& _v) const
 //{
 //    return x < _v.x && y < _v.y && z < _v.z;
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::operator<=(const v4& _v) const
+//constexpr bool v4<T>::operator<=(const v4& _v) const
 //{
 //    return x <= _v.x && y <= _v.y && z <= _v.z;
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::operator>(const v4& _v) const
+//constexpr bool v4<T>::operator>(const v4& _v) const
 //{
 //    return x > _v.x && y > _v.y && z > _v.z;
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::operator>=(const v4& _v) const
+//constexpr bool v4<T>::operator>=(const v4& _v) const
 //{
 //    return x >= _v.x && y >= _v.y && z >= _v.z;
 //}
@@ -298,19 +298,19 @@
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::is_nan() const noexcept
+//constexpr bool v4<T>::is_nan() const noexcept
 //{
 //    return math::is_nan(x) || math::is_nan(y) || math::is_nan(z);
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::is_finite() const noexcept
+//constexpr bool v4<T>::is_finite() const noexcept
 //{
 //    return math::is_finite(x) && math::is_finite(y) && math::is_finite(z);
 //}
 //
 //template <class T>
-//constexpr b32 v4<T>::is_normalized() const noexcept
+//constexpr bool v4<T>::is_normalized() const noexcept
 //{
 //    const f32 sqrlength = get_sqrlength();
 //    return math::is_almost_null(sqrlength);

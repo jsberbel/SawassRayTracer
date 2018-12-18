@@ -9,7 +9,7 @@
 #include "core/profiler.h"
 
 #include "engine/hitablelist.h"
-#include "engine/sphere.h"
+#include "engine/geometry.h"
 #include "engine/bvh.h"
 #include "engine/camera.h"
 #include "engine/material.h"
@@ -18,21 +18,28 @@
 
 constexpr fv3 background_color(const Ray& _ray)
 {
+#define BG_BLACK
+#if defined(BG_GRADIENT)
     const fv3 unit_dir = _ray.direction.get_normalized();
     const f32 t = 0.5f * (unit_dir.y + 1.f);
     return math::lerp(fv3(1.f), fv3(.5f, .7f, 1.f), t);
+#elif defined(BG_BLACK)
+    return fv3::zero();
+#endif
 }
 
-inline fv3 generate_color(const Ray& _ray, Hitable* _world, f32 _time, s32 _depth)
+inline fv3 generate_color(const Ray& _ray, Hitable* _world, f32 _time, s32 _depth = 0)
 {
     if (Hit hit; _world->hit(_ray, _time, 0.001f, std::numeric_limits<f32>::max(), &hit))
     {
         Ray scattered;
         fv3 attenuation;
+        const fv3 emitted = hit.material->emit(hit.uv, hit.point);
         if (_depth < 50 && hit.material->scatter(_ray, hit, &attenuation, &scattered))
-            return attenuation * generate_color(scattered, _world, _time, _depth + 1);
-
-        return fv3::zero();
+        {
+            return emitted + attenuation * generate_color(scattered, _world, _time, _depth + 1);
+        }
+        return emitted;
     }
     return background_color(_ray);
 }
@@ -101,6 +108,19 @@ inline Hitable* generate_perlin_spheres()
     return list;
 }
 
+inline Hitable* generate_rect_light()
+{
+    Texture* t1 = new CheckerTexture(new ConstTexture(fv3(0.2f, 0.3f, 0.1f)), new ConstTexture(fv3(0.9f, 0.9f, 0.9f)));
+    Texture* t2 = new ImageTexture(util::get_data_path() / "earth_daymap.jpg");
+    //Texture* t2 = new NoiseTexture(1);
+    HitableList* list = new HitableList(4);
+    list->add( new Sphere( Transform(fv3(0.f, -1000.f, 0.f)), 1000.f, new Lambertian(t1) ) );
+    list->add( new Sphere( Transform(fv3(0.f, 2.f, 0.f)), 2.f, new Lambertian(t2) ) );
+    list->add( new Sphere( Transform(fv3(0.f, 2.f, -7.f)), 2.f, new DiffuseLight(new ConstTexture(fv3(4.f))) ) );
+    //list->add( new XYRectangle( Transform(fv3(6.f, 2.f, -2.f)), 2.f, 3.f, new DiffuseLight(new ConstTexture(fv3(4.f))) ) );
+    return list;
+}
+
 int main()
 {
     PROFILER_BATCH_START(1);
@@ -113,9 +133,10 @@ int main()
     data.reserve(width * height);
 
     //Hitable* world = generate_rnd_world();
-    Hitable* world = generate_perlin_spheres();
+    //Hitable* world = generate_perlin_spheres();
+    Hitable* world = generate_rect_light();
 
-    constexpr fv3 look_from(13.f, 2.f, -8.f);
+    constexpr fv3 look_from(13.f, 5.f, -20.f);
     constexpr fv3 look_at(0.f, 0.f, 0.f);
     constexpr f32 v_FOV = 25.f;
     constexpr f32 aperture = 0.f;
@@ -145,10 +166,9 @@ int main()
                 const f32 v     = (y + sy) * inv_height;
                 const Ray ray   = camera.trace_ray(u, v);
                 const f32 time  = f32(s) * inv_nb_samples; //util::frand_01();
-                const s32 depth = 0;
-                color += generate_color(ray, world, time, depth);
+                color += generate_color(ray, world, time).get_clamped(0.f, 1.f);
             }
-            color /= nb_samples;
+            color *= inv_nb_samples;
             color = correct_gamma(color);
 
             const rgb rgb((255.99f * color).cast<u8>());
@@ -159,7 +179,7 @@ int main()
         util::output_to_console("%.2f%% completed", pct);
     }
 
-    util::output_img_to_incremental_file( width, height, data );
+    util::output_img_to_incremental_file(width, height, data);
     //util::output_img_to_file("test", width, height, data);
 
     util::safe_del(world);

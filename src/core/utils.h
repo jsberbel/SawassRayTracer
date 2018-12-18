@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/math/v3.h"
+#include "core/path.h"
 
 #include <random>
 #include <sstream>
@@ -8,12 +8,12 @@
 #include <iomanip>
 #include <cstdarg>
 #include <cstdio>
-#include <filesystem>
-namespace fs = std::filesystem;
 
 #define STBI_MSC_SECURE_CRT
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #define NON_COPYABLE( CLS ) \
     public: \
@@ -26,18 +26,6 @@ namespace fs = std::filesystem;
     constexpr CLS (CLS &&) noexcept                 = default; \
     constexpr CLS & operator=(const CLS &) noexcept = delete; \
     constexpr CLS & operator=(CLS &&) noexcept      = default \
-
-template <class T>
-class In
-{
-public:
-    constexpr In(const T& _p) : m_param(_p) {}
-    constexpr operator const T&() { return m_param; }
-    constexpr T* operator->() const noexcept { return m_param; }
-
-private:
-    const T& m_param;
-};
 
 namespace util
 {
@@ -144,26 +132,13 @@ namespace util
         printf((_fmt + "\n").c_str(), std::forward<Args>(_args)...);
     }
 
-    inline fs::path get_data_path()
+    inline bool output_img_to_file(const std::string& _filename, u32 _width, u32 _height, const std::vector<rgb>& _data)
     {
-        return fs::path("dat");
-    }
-
-    inline fs::path get_output_path()
-    {
-        return fs::path("out");
-    }
-
-    inline b32 output_img_to_file(const std::string& _filename, u32 _width, u32 _height, const std::vector<rgb>& _data)
-    {
-        if (!fs::exists(get_output_path()))
-            fs::create_directory(get_output_path());
-
-        const fs::path filepath = get_output_path() / (_filename + ".png");
+        const fs::path filepath = path::get_out_dir() / (_filename + ".png");
         return stbi_write_png(filepath.string().c_str(), _width, _height, 3, &_data[0], 0);
     }
 
-    inline b32 output_img_to_incremental_file(u32 _width, u32 _height, const std::vector<rgb>& _data)
+    inline bool output_img_to_incremental_file(u32 _width, u32 _height, const std::vector<rgb>& _data)
     {
         return output_img_to_file(get_time_of_day(), _width, _height, _data);
     }

@@ -23,13 +23,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\core\assert.h" />
+    <ClInclude Include="..\..\..\src\core\logger.h" />
     <ClInclude Include="..\..\..\src\core\math\aabb.h" />
     <ClInclude Include="..\..\..\src\core\math\math.h" />
-    <ClInclude Include="..\..\..\src\core\math\v2.h" />
+    <ClInclude Include="..\..\..\src\core\math\algebra.h" />
     <ClInclude Include="..\..\..\src\core\math\v3.h" />
     <ClInclude Include="..\..\..\src\core\math\v4.h" />
     <ClInclude Include="..\..\..\src\core\profiler.h" />
-    <ClInclude Include="..\..\..\src\core\ptr.h" />
+    <ClInclude Include="..\..\..\src\core\path.h" />
     <ClInclude Include="..\..\..\src\core\traits.h" />
     <ClInclude Include="..\..\..\src\core\types.h" />
     <ClInclude Include="..\..\..\src\core\utils.h" />
@@ -41,7 +42,7 @@
     <ClInclude Include="..\..\..\src\engine\material.h" />
     <ClInclude Include="..\..\..\src\engine\perlin.h" />
     <ClInclude Include="..\..\..\src\engine\ray.h" />
-    <ClInclude Include="..\..\..\src\engine\sphere.h" />
+    <ClInclude Include="..\..\..\src\engine\geometry.h" />
     <ClInclude Include="..\..\..\src\engine\texture.h" />
     <ClInclude Include="..\..\..\src\engine\transform.h" />
   </ItemGroup>

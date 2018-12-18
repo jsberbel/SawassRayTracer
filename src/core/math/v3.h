@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "core/math/v2.h"
+#include "core/math/algebra.h"
 
 template <class T>
 union v3
@@ -18,7 +18,7 @@ public:
     constexpr v3() noexcept                                       : x(0), y(0), z(0) {}
     explicit constexpr v3(T _s) noexcept                          : x(_s), y(_s), z(_s) {}
     explicit constexpr v3(T _x, T _y, T _z) noexcept              : x(_x), y(_y), z(_z) {}
-    explicit constexpr v3(const v2<T>& _xy, T _z = T(0)) noexcept : xy(_xy), z(_z) {}
+    explicit constexpr v3(const V2<T>& _xy, T _z = T(0)) noexcept : xy(_xy), z(_z) {}
 
     template <typename S>
     constexpr v3<S> cast() const { return v3<S>(S(x), S(y), S(z)); }
@@ -47,12 +47,12 @@ public:
     constexpr v3 operator/(const v3& _v) const noexcept;
     constexpr v3 operator/(T _s) const noexcept;
 
-    constexpr b32 operator==(const v3& _v) const;
-    constexpr b32 operator!=(const v3& _v) const;
-    constexpr b32 operator<(const v3& _v) const;
-    constexpr b32 operator<=(const v3& _v) const;
-    constexpr b32 operator>(const v3& _v) const;
-    constexpr b32 operator>=(const v3& _v) const;
+    constexpr bool operator==(const v3& _v) const;
+    constexpr bool operator!=(const v3& _v) const;
+    constexpr bool operator<(const v3& _v) const;
+    constexpr bool operator<=(const v3& _v) const;
+    constexpr bool operator>(const v3& _v) const;
+    constexpr bool operator>=(const v3& _v) const;
 
     friend constexpr std::istream& operator>>(std::istream& _is, v3& _v) noexcept;
     friend inline std::ostream& operator<<(std::ostream& _os, const v3& _v) noexcept;
@@ -68,9 +68,9 @@ public:
     static constexpr v3 infinity() { return v3(std::numeric_limits<T>::infinity()); }
     static constexpr v3 nan()      { return v3(std::numeric_limits<T>::quiet_NaN()); }
 
-    constexpr b32 is_nan() const noexcept;
-    constexpr b32 is_finite() const noexcept;
-    constexpr b32 is_normalized() const noexcept;
+    constexpr bool is_nan() const noexcept;
+    constexpr bool is_finite() const noexcept;
+    constexpr bool is_normalized() const noexcept;
 
     constexpr T get_sqrlength() const noexcept;
     constexpr T get_length() const noexcept;
@@ -80,6 +80,7 @@ public:
     constexpr v3 get_inverse() const noexcept;
     constexpr v3 get_floor() const noexcept;
     constexpr v3 get_ceil() const noexcept;
+    constexpr v3 get_clamped(T _min, T _max) const noexcept;
     constexpr T get_shortest_angle(const v3& _axis = right()) const noexcept;
 
     inline void set(T _val) noexcept;
@@ -87,8 +88,8 @@ public:
     inline void normalize() noexcept;
     inline void clear() noexcept;
     
-    constexpr v2<T>& get_xy() { return xy; }
-    constexpr v2<T>& get_yz() { return yz; }
+    constexpr V2<T>& get_xy() { return xy; }
+    constexpr V2<T>& get_yz() { return yz; }
 
     template<auto _axis>
     constexpr T get() const;
@@ -256,37 +257,37 @@ constexpr v3<T> v3<T>::operator/(T _s) const noexcept
 }
 
 template <class T>
-constexpr b32 v3<T>::operator==(const v3& _v) const
+constexpr bool v3<T>::operator==(const v3& _v) const
 {
     return x == _v.x && y == _v.y && z == _v.z;
 }
 
 template <class T>
-constexpr b32 v3<T>::operator!=(const v3& _v) const
+constexpr bool v3<T>::operator!=(const v3& _v) const
 {
     return x != _v.x || y != _v.y || z != _v.z;
 }
 
 template <class T>
-constexpr b32 v3<T>::operator<(const v3& _v) const
+constexpr bool v3<T>::operator<(const v3& _v) const
 {
     return x < _v.x && y < _v.y && z < _v.z;
 }
 
 template <class T>
-constexpr b32 v3<T>::operator<=(const v3& _v) const
+constexpr bool v3<T>::operator<=(const v3& _v) const
 {
     return x <= _v.x && y <= _v.y && z <= _v.z;
 }
 
 template <class T>
-constexpr b32 v3<T>::operator>(const v3& _v) const
+constexpr bool v3<T>::operator>(const v3& _v) const
 {
     return x > _v.x && y > _v.y && z > _v.z;
 }
 
 template <class T>
-constexpr b32 v3<T>::operator>=(const v3& _v) const
+constexpr bool v3<T>::operator>=(const v3& _v) const
 {
     return x >= _v.x && y >= _v.y && z >= _v.z;
 }
@@ -306,19 +307,19 @@ inline std::ostream& operator<<(std::ostream& _os, const v3<T>& _v) noexcept
 }
 
 template <class T>
-constexpr b32 v3<T>::is_nan() const noexcept
+constexpr bool v3<T>::is_nan() const noexcept
 {
     return math::is_nan(x) || math::is_nan(y) || math::is_nan(z);
 }
 
 template <class T>
-constexpr b32 v3<T>::is_finite() const noexcept
+constexpr bool v3<T>::is_finite() const noexcept
 {
     return math::is_finite(x) && math::is_finite(y) && math::is_finite(z);
 }
 
 template <class T>
-constexpr b32 v3<T>::is_normalized() const noexcept
+constexpr bool v3<T>::is_normalized() const noexcept
 {
     const f32 sqrlength = get_sqrlength();
     return math::is_almost_null(sqrlength);
@@ -380,6 +381,12 @@ template <class T>
 constexpr v3<T> v3<T>::get_ceil() const noexcept
 {
     return v3<T>(math::ceil(x), math::ceil(y), math::ceil(z));
+}
+
+template <class T>
+constexpr v3<T> v3<T>::get_clamped(T _min, T _max) const noexcept
+{
+    return v3<T>(math::clamp(x, _min, _max), math::clamp(y, _min, _max), math::clamp(z, _min, _max));
 }
 
 template <class T>

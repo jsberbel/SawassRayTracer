@@ -8,7 +8,12 @@
 #pragma once
 
 #ifdef _DEBUG
-#define sws_assert(expression) if (!(expression)) { *(int*)0 = 0; }
+    #ifdef _WIN32
+        #include <intrin.h>
+        #define sws_assert(exp) if (!(exp)) { __debugbreak(); }
+    #else
+        #define sws_assert(exp) if (!(exp)) { *(int*)0 = 0; }
+    #endif
 #else
-#define sws_assert(expression) ( (void) 0 )
+    #define sws_assert(exp) ( (void)0 )
 #endif

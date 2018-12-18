@@ -10,7 +10,7 @@ class Texture
 {
 public:
     virtual inline ~Texture() = default;
-    virtual inline fv3 value(const fv2& _uv, const fv3& _p) const = 0;
+    virtual inline fv3 value(const V2f& _uv, const fv3& _p) const = 0;
 };
 
 class ConstTexture : public Texture
@@ -20,7 +20,7 @@ public:
     constexpr ConstTexture(const fv3& _c) : color(_c) {}
     virtual inline ~ConstTexture() = default;
 
-    inline fv3 value(const fv2& _uv, const fv3& _p) const override { return color; }
+    inline fv3 value(const V2f& _uv, const fv3& _p) const override { return color; }
 
 public:
     fv3 color;
@@ -37,7 +37,7 @@ public:
     constexpr CheckerTexture& operator=(CheckerTexture&& _other) noexcept;
     virtual inline ~CheckerTexture();
 
-    inline fv3 value(const fv2& _uv, const fv3& _p) const override;
+    inline fv3 value(const V2f& _uv, const fv3& _p) const override;
 
 private:
     Texture* m_odd = nullptr;
@@ -49,7 +49,7 @@ class NoiseTexture : public Texture
 public:
     NoiseTexture(f32 _scale = 1.f);
 
-    fv3 value(const fv2& _uv, const fv3& _p) const override;
+    fv3 value(const V2f& _uv, const fv3& _p) const override;
 
 public:
     f32 scale;
@@ -65,7 +65,7 @@ public:
     constexpr ImageTexture& operator=(ImageTexture&& _other) noexcept;
     virtual inline ~ImageTexture();
 
-    fv3 value(const fv2& _uv, const fv3& _p) const override;
+    fv3 value(const V2f& _uv, const fv3& _p) const override;
 
 private:
     uchar* m_data = nullptr;
@@ -103,7 +103,7 @@ inline CheckerTexture::~CheckerTexture()
     util::safe_del(m_even);
 }
 
-inline fv3 CheckerTexture::value(const fv2& _uv, const fv3& _p) const
+inline fv3 CheckerTexture::value(const V2f& _uv, const fv3& _p) const
 {
     const f32 sines = math::sin(10.f*_p.x)*math::sin(10.f*_p.y)*math::sin(10.f*_p.z);
     return (sines < 0.f) ? m_odd->value(_uv, _p) : m_even->value(_uv, _p);
@@ -116,7 +116,7 @@ inline NoiseTexture::NoiseTexture(f32 _scale)
 {
 }
 
-inline fv3 NoiseTexture::value(const fv2& _uv, const fv3& _p) const
+inline fv3 NoiseTexture::value(const V2f& _uv, const fv3& _p) const
 {
     //return fv3(1.f) * (Perlin::noise(scale*_p));
     //return fv3(1.f) * 0.5f * (1.f + math::sin(scale*_p.x + 5.f*Perlin::turbulence(scale*_p)));
@@ -164,7 +164,7 @@ inline ImageTexture::~ImageTexture()
     util::safe_del(m_data);
 }
 
-inline fv3 ImageTexture::value(const fv2& _uv, const fv3& _p) const
+inline fv3 ImageTexture::value(const V2f& _uv, const fv3& _p) const
 {
     s32 i = s32(m_width * _uv.u);
     s32 j = s32(m_height * (1.f-_uv.v) - 0.001f);

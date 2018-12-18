@@ -19,12 +19,13 @@ public:
     explicit inline Transform(const fv3& _pos);
     explicit inline Transform(const fv3& _start, const fv3& _end);
 
+    inline bool is_static() const;
     inline fv3 get_position(f32 _time) const;
 
 private:
     fv3 m_start;
     fv3 m_target_offset;
-    b32 m_is_static;
+    bool m_is_static;
 };
 
 inline Transform::Transform(const fv3& _pos)
@@ -38,6 +39,11 @@ inline Transform::Transform(const fv3& _start, const fv3& _end)
     m_start = _start;
     m_target_offset = _end - _start;
     m_is_static = (_start == _end);
+}
+
+inline bool Transform::is_static() const
+{
+    return m_is_static;
 }
 
 inline fv3 Transform::get_position(f32 _time) const

@@ -19,24 +19,24 @@ public:
     Material() = default;
     virtual ~Material() noexcept = default;
 
-    virtual b32 scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, Ray* _scattered) const noexcept = 0;
+    virtual bool scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept = 0;
+    virtual fv3 emit(const V2f& _uv, const fv3& _p) const noexcept { return fv3::zero(); };
 
     static constexpr fv3 reflect(const fv3& _incident, const fv3& _normal) noexcept;
-    static constexpr b32 refract(const fv3& _incident, const fv3& _normal, f32 _refractive_ratio, fv3* _refracted) noexcept;
+    static constexpr bool refract(const fv3& _incident, const fv3& _normal, f32 _refractive_ratio, fv3* refracted_) noexcept;
     static constexpr f32 schlick(f32 _cosine, f32 _refractive_idx) noexcept;
 };
 
 class Lambertian : public Material
 {
+    NON_COPYABLE(Lambertian);
 public:
     constexpr Lambertian(Texture* _albedo) noexcept;
-    constexpr Lambertian(const Lambertian&) noexcept = delete;
-    constexpr Lambertian& operator=(const Lambertian&) noexcept = delete;
     inline Lambertian(Lambertian&& _other) noexcept;
     constexpr Lambertian& operator=(Lambertian&& _other) noexcept;
     virtual inline ~Lambertian();
 
-    inline b32 scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept override;
+    inline bool scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept override;
 
 public:
     Texture* albedo;
@@ -49,7 +49,7 @@ class Metal : public Material
 public:
     constexpr Metal(const fv3& _albedo, f32 _fuzziness) noexcept;
 
-    inline b32 scatter(const Ray& _ray, const Hit& Hit, fv3* attenuation, Ray* scattered) const noexcept override;
+    inline bool scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept override;
 
 public:
     fv3 albedo;
@@ -63,29 +63,46 @@ class Dielectric : public Material
 public:
     constexpr Dielectric(f32 _refractive_idx) noexcept;
 
-    inline b32 scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept override;
+    inline bool scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept override;
 
 public:
     f32 refractive_idx;
 };
 
-// -- //
+class DiffuseLight : public Material
+{
+    NON_COPYABLE(DiffuseLight);
+
+public:
+    constexpr DiffuseLight(Texture* _t);
+    inline DiffuseLight(DiffuseLight&& _other) noexcept;
+    constexpr DiffuseLight& operator=(DiffuseLight&& _other) noexcept;
+    virtual inline ~DiffuseLight();
+
+    inline bool scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept override;
+    inline fv3 emit(const V2f& _uv, const fv3& _p) const noexcept override;
+
+public:
+    Texture* emitter;
+};
+
+// Material //
 
 constexpr fv3 Material::reflect(const fv3& _incident, const fv3& _normal) noexcept
 {
     return _incident - 2.f * math::dot(_incident, _normal) * _normal;
 }
 
-constexpr b32 Material::refract(const fv3& _incident, const fv3& _normal, f32 _refractive_ratio, fv3* _refracted) noexcept
+constexpr bool Material::refract(const fv3& _incident, const fv3& _normal, f32 _refractive_ratio, fv3* refracted_) noexcept
 {
-    sws_assert( _refracted );
+    sws_assert(refracted_);
 
     const fv3 unit_incident = _incident.get_normalized();
     const f32 cos_incident = math::dot(unit_incident, _normal);
     const f32 d = 1.f - _refractive_ratio * _refractive_ratio * (1.f - cos_incident * cos_incident);
     if (d > 0.f)
     {
-        *_refracted = _refractive_ratio * (unit_incident - _normal * cos_incident) - _normal * std::sqrt(d);
+        *refracted_ = _refractive_ratio * (unit_incident - _normal * cos_incident) - _normal * std::sqrt(d);
         return true;
     }
     return false;
@@ -123,13 +140,13 @@ inline Lambertian::~Lambertian()
     util::safe_del(albedo);
 }
 
-inline b32 Lambertian::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept
+inline bool Lambertian::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept
 {
     sws_assert(attenuation_ && scattered_);
 
     const fv3 target = _hit.point + _hit.normal + util::rand_point_in_unit_sphere();
-    *attenuation_ = albedo->value(_hit.uv, _hit.point); // TODO(jserrano): add scattering probability
     *scattered_ = Ray(_hit.point, target - _hit.point);
+    *attenuation_ = albedo->value(_hit.uv, _hit.point); // TODO(jserrano): add scattering probability
     return true;
 }
 
@@ -141,7 +158,7 @@ constexpr Metal::Metal(const fv3& albedo, f32 fuzziness) noexcept
 {
 }
 
-inline b32 Metal::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, Ray* _scattered) const noexcept
+inline bool Metal::scatter(const Ray& _ray, const Hit& _hit, fv3* _attenuation, Ray* _scattered) const noexcept
 {
     sws_assert( _attenuation && _scattered );
 
@@ -158,7 +175,7 @@ constexpr Dielectric::Dielectric(f32 _refractive_idx) noexcept
 {
 }
 
-inline b32 Dielectric::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept
+inline bool Dielectric::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept
 {
     sws_assert(attenuation_ && scattered_);
 
@@ -193,4 +210,39 @@ inline b32 Dielectric::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuatio
     *scattered_ = Ray(_hit.point, (is_reflected) ? reflected : refracted);
 
     return true;
+}
+
+// DiffuseLight //
+
+constexpr DiffuseLight::DiffuseLight(Texture* _t)
+    : emitter(_t) 
+{}
+
+inline DiffuseLight::DiffuseLight(DiffuseLight&& _other) noexcept
+    : emitter(std::exchange(_other.emitter, nullptr))
+{
+}
+
+inline constexpr DiffuseLight& DiffuseLight::operator=(DiffuseLight&& _other) noexcept
+{
+    if (this != std::addressof(_other))
+    {
+        emitter = std::exchange(_other.emitter, nullptr);
+    }
+    return *this;
+}
+
+inline DiffuseLight::~DiffuseLight()
+{
+    util::safe_del(emitter);
+}
+
+inline bool DiffuseLight::scatter(const Ray& _ray, const Hit& _hit, fv3* attenuation_, Ray* scattered_) const noexcept
+{
+    return false;
+}
+
+inline fv3 DiffuseLight::emit(const V2f& _uv, const fv3& _p) const noexcept
+{
+    return emitter->value(_uv, _p);
 }

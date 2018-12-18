@@ -24,7 +24,7 @@ public:
 
     constexpr void set(const fv3& _min, const fv3& _max);
 
-    constexpr b32 is_hit(const Ray& _ray, f32 _tmin, f32 _tmax) const;
+    constexpr bool is_hit(const Ray& _ray, f32 _tmin, f32 _tmax) const;
 
     static constexpr AABB get_surrounding_box(const AABB& _boxA, const AABB& _boxB);
 
@@ -45,7 +45,7 @@ constexpr void AABB::set(const fv3& _min, const fv3& _max)
     max = _max;
 }
 
-constexpr b32 AABB::is_hit(const Ray& _ray, f32 _tmin, f32 _tmax) const
+constexpr bool AABB::is_hit(const Ray& _ray, f32 _tmin, f32 _tmax) const
 {
     for (usize i = 0u; i < 3u; ++i)
     {

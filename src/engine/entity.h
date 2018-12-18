@@ -20,10 +20,8 @@ public:
     constexpr Entity& operator=(Entity&& _other) noexcept;
     virtual inline ~Entity();
 
-    inline b32 hit(const Ray& _ray, f32 _time, f32 _zmin, f32 _zmax, Hit* hit_) const override = 0;
-
-    inline b32 compute_aabb(f32 _time, AABB* aabb_) const override = 0;
-    inline b32 compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override = 0;
+    inline bool hit(const Ray& _ray, f32 _time, f32 _tmin, f32 _tmax, Hit* hit_) const override = 0;
+    inline bool compute_aabb(f32 _t0, f32 _t1, AABB* aabb_) const override = 0;
 
 public:
     Transform transform;
