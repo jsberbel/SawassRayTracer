@@ -10,7 +10,7 @@ using u32   = unsigned int;
 using u64   = unsigned long long;
 
 using s8    = signed char;
-using i16   = signed short;
+using s16   = signed short;
 using s32   = signed int;
 using s64   = signed long long;
 
@@ -41,3 +41,6 @@ using ix    = s32;
 #define sws_ptr_from_u32(type, value) ((type *)((usize)(value)))
 
 #define sws_offset_of(type, member) ((uptr)&(((type *)0)->member))
+
+static constexpr fx MAX_FLOAT = std::numeric_limits<fx>::max();
+static constexpr fx INFINITY  = std::numeric_limits<fx>::infinity();

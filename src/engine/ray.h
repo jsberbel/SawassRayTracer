@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <core/math/v3.h>
+#include <core/math/algebra.h>
 
 class Ray
 {
@@ -15,28 +15,31 @@ class Ray
 
 public:
     constexpr Ray() noexcept;
-    constexpr Ray(const fv3& origin, const fv3& direction) noexcept;
+    constexpr Ray(const P3f& origin, const V3f& direction) noexcept;
 
-    constexpr fv3 point_at(f32 distance) const noexcept;
+    constexpr P3f operator()(fx t) const noexcept;
 
 public:
-    fv3 origin;
-    fv3 direction;
+    P3f o;
+    V3f d;
+    mutable fx t_max;
+    fx time;
+    const Ambience* ambience;
 };
 
 constexpr Ray::Ray() noexcept
-    : origin(0.f)
-    , direction(0.f)
+    : o(0.f)
+    , d(0.f)
 {
 }
 
-constexpr Ray::Ray(const fv3& origin, const fv3& direction) noexcept
-    : origin(origin)
-    , direction(direction.get_normalized())
+constexpr Ray::Ray(const P3f& origin, const V3f& direction) noexcept
+    : o(origin)
+    , d(direction.get_normalized())
 {
 }
 
-constexpr fv3 Ray::point_at(f32 distance) const noexcept
+constexpr P3f Ray::operator()(fx t) const noexcept
 {
-    return origin + distance * direction;
+    return o + t * d;
 }
