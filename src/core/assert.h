@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifdef _DEBUG
+#if defined(_DEBUG) || !defined(SWS_ASSERTIONS_DISABLED)
     #ifdef _WIN32
         #include <intrin.h>
         #define sws_assert(exp) if (!(exp)) { __debugbreak(); }

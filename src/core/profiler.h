@@ -7,7 +7,7 @@
 
 #pragma once
 
-#ifdef PROFILING
+#ifdef SWS_PROFILE
 
 #include "core/utils.h"
 
@@ -126,7 +126,7 @@ namespace prof
 
     inline void output_to_incremental_file()
     {
-        output_to_file("swsrt_" + util::get_time_of_day());
+        output_to_file(util::k_project_prefix + util::get_time_of_day());
     }
 
     inline void output_to_file(const std::string& _filename)

@@ -30,17 +30,15 @@ using usize = std::size_t;
 
 //#define SWS_FLOAT_AS_DOUBLE
 #ifdef SWS_FLOAT_AS_DOUBLE
-using fx    = f64;
+using flt = f64;
 #else
-using fx    = f32;
+using flt = f32;
 #endif
-
-using ix    = s32;
 
 #define sws_u32_from_ptr(ptr) ((u32)(usize)(ptr))
 #define sws_ptr_from_u32(type, value) ((type *)((usize)(value)))
 
 #define sws_offset_of(type, member) ((uptr)&(((type *)0)->member))
 
-static constexpr fx MAX_FLOAT = std::numeric_limits<fx>::max();
-static constexpr fx INFINITY  = std::numeric_limits<fx>::infinity();
+static constexpr flt sws_max_float = std::numeric_limits<flt>::max();
+static constexpr flt sws_infinity  = std::numeric_limits<flt>::infinity();

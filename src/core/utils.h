@@ -29,6 +29,8 @@
 
 namespace util
 {
+    inline const char* k_project_prefix = "swsrt_";
+
     template <class T, ENABLE_IF(IS_POINTER(T))>
     constexpr void safe_del(T*& _ptr)
     {

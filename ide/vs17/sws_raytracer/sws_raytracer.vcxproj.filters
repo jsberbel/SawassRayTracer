@@ -81,8 +81,14 @@
     <ClInclude Include="..\..\..\src\core\path.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\core\logger.h">
+    <ClInclude Include="..\..\..\src\core\check.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\transform.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\core\matrix.h">
+      <Filter>core\math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

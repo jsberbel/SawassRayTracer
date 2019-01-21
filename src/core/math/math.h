@@ -23,14 +23,14 @@ namespace math
     */
     template <class T>
     inline constexpr T Pi = T(3.141592653589793238462643383279502884L);
-    inline constexpr fx Pif = Pi<fx>;
+    inline constexpr flt Pif = Pi<flt>;
     
     /**
      * Constant that represents the perimeter of the unit circle (r = 1).
      */
     template <class T>
     inline constexpr T Pi2 = Pi<T> * T(2);
-    inline constexpr fx Pi2f = Pi<fx>;
+    inline constexpr flt Pi2f = Pi<flt>;
 
     /**
      * Returns whether or not _x is NaN (not a number).
